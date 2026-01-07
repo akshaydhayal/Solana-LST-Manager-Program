@@ -8,12 +8,19 @@
 6️⃣ Implement ProcessWithdraw
 7️⃣ Add rebalancing + split/merge
 
+
+## **How industry LST protocols do it:**
+**Marinade, Lido, Jito, and other LSTs:**
+1. **Vault/Reserve account holds all SOL** - controlled by program PDAs
+2. **Protocol pays for all operations** - stake account creation, splitting, merging
+3. **Users only pay transaction fees** - typically <0.001 SOL
+4. **Permissioned staking operators** - not every user can call stake; usually:
+   - Admin/crank calls it periodically
+   - Or keeper bots trigger staking when thresholds are met
+5. **Batching** - stake multiple users' deposits together in one operation
+
+
 lst manager, lst manager vault
-now we create a stake account -> fdelehkgate to validator to use them in a dogood wau;y;y this is dfogood wauioy
-now i am fgood manner tjahat that that that i am satuing statuinhg
-
-beast hamester jamester is not good 
-
 
 Sure 🙂 let’s do this purely with numbers, very simple, no jargon.
 

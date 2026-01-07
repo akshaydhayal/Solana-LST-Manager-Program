@@ -33,13 +33,13 @@ pub fn initialise_lst(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_b
     }
 
     let lst_manager_vault_seeds=&["lst_manager_vault".as_bytes(), lst_manager_pda.key.as_ref(), &lst_manager_vault_bump.to_le_bytes()];
-    let lst_manager_vault_derived=Pubkey::create_program_address(lst_manager_vault_seeds,program_id)?;
+    let lst_manager_vault_derived=Pubkey::create_program_address(lst_manager_vault_seeds, program_id)?;
     if *lst_manager_vault_pda.key!=lst_manager_vault_derived{
         return Err(LSTErrors::LSTManagerVaultPdaMismatch.into());
     }
 
     let lst_mint_seeds=&["lst_mint".as_bytes(), lst_manager_pda.key.as_ref(), &lst_mint_bump.to_le_bytes()];
-    let lst_mint_derived=Pubkey::create_program_address(lst_mint_seeds,program_id)?;
+    let lst_mint_derived=Pubkey::create_program_address(lst_mint_seeds, program_id)?;
     if *lst_mint_pda.key!=lst_mint_derived{
         return Err(LSTErrors::LSTMintPdaMismatch.into());
     }
@@ -73,7 +73,8 @@ pub fn initialise_lst(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_b
         *system_prog.key,
         &SystemInstruction::CreateAccount {
             // lamports: rent.minimum_balance(0), space: 0, owner: *lst_manager_pda.key
-            lamports: rent.minimum_balance(0), space: 0, owner: *program_id 
+            // lamports: rent.minimum_balance(0), space: 0, owner: *program_id 
+            lamports: rent.minimum_balance(0), space: 0, owner: *system_prog.key 
         },
         vec![
             AccountMeta{pubkey:*user.key, is_signer:true, is_writable:true},

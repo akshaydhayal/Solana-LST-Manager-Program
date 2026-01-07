@@ -23,9 +23,9 @@ pub fn process_instruction(program_id:&Pubkey, accounts:&[AccountInfo], instruct
             msg!("deposit SOL ix called");
             deposit_sol(program_id, accounts, deposit_amount, lst_manager_bump, lst_manager_vault_bump, lst_mint_bump)?;
         },
-        InstructionType::StakeVaultSOL { lst_manager_bump, lst_manager_vault_bump }=>{
+        InstructionType::StakeVaultSOL { lst_manager_bump, lst_manager_vault_bump,stake_acc_bump }=>{
             msg!("stake vault sol ix called");
-            stake_vault_sol(program_id, accounts, lst_manager_bump, lst_manager_vault_bump)?;
+            stake_vault_sol(program_id, accounts, lst_manager_bump, lst_manager_vault_bump,stake_acc_bump)?;
         }
     }
     Ok(())
