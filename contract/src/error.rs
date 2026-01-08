@@ -16,8 +16,10 @@ pub enum LSTErrors{
     LSTMintPdaMismatch,
     
     #[error("given stake manager pda seeds do not match with correct stake manager seeds")]
-    StakeManagerPdaMismatch
+    StakeManagerPdaMismatch,
 
+    #[error("given user position pda seeds do not match with correct user position seeds")]
+    UserPositionPdaMismatch
 }
 
 impl From<LSTErrors> for ProgramError{

@@ -7,16 +7,19 @@ use solana_program::{
 use spl_token::instruction::{mint_to_checked , initialize_mint2};
 use borsh::{BorshDeserialize, BorshSerialize};
 
-use crate::{error::LSTErrors, state::LSTManager};
+use crate::{error::LSTErrors, state::{LSTManager, UserPosition}};
 
+// pub fn deposit_sol(program_id:&Pubkey, accounts:&[AccountInfo],deposit_amount:u64, lst_manager_bump:u8, lst_manager_vault_bump:u8, lst_mint_bump:u8, user_position_bump:u8)->ProgramResult{
 pub fn deposit_sol(program_id:&Pubkey, accounts:&[AccountInfo],deposit_amount:u64, lst_manager_bump:u8, lst_manager_vault_bump:u8, lst_mint_bump:u8)->ProgramResult{
     let mut accounts_iter=accounts.iter();
     let user=next_account_info(&mut accounts_iter)?;
     let lst_manager_pda=next_account_info(&mut accounts_iter)?;
     let lst_manager_vault_pda=next_account_info(&mut accounts_iter)?;
     let lst_mint_pda=next_account_info(&mut accounts_iter)?;
+    // let user_position_pda=next_account_info(&mut accounts_iter)?;
     let user_lst_ata=next_account_info(&mut accounts_iter)?;
     let system_prog=next_account_info(&mut accounts_iter)?;
+
     if !user.is_signer{
         return Err(ProgramError::MissingRequiredSignature);
     }
@@ -77,6 +80,26 @@ pub fn deposit_sol(program_id:&Pubkey, accounts:&[AccountInfo],deposit_amount:u6
         &[lst_mint_pda.clone(), user_lst_ata.clone(), lst_manager_pda.clone()],
         &[lst_manager_seeds])?;
     msg!("minted {} lst tokens to user's ata",lst_tokens_to_mint);
+
+    // let rent=Rent::get()?;
+    // let user_position_seeds=&[b"user_position", user.key.as_ref(), &[user_position_bump]];
+    // let user_position_derived_pda=Pubkey::create_program_address(user_position_seeds,program_id)?;
+    // if *user_position_pda.key!=user_position_derived_pda{
+    //     return Err(LSTErrors::UserPositionPdaMismatch.into());
+    // }
+
+    // let user_position_pda_create_ix=Instruction::new_with_bincode(
+    //     *system_prog.key,
+    //     &SystemInstruction::CreateAccount {
+    //         lamports: rent.minimum_balance(UserPosition::USER_POSITION_SIZE),
+    //         space: UserPosition::USER_POSITION_SIZE as u64, owner: *program_id
+    //     },
+    //     vec![AccountMeta::new(*user.key, true), AccountMeta::new(*user_position_pda.key, true)]
+    // );
+    // invoke_signed(&user_position_pda_create_ix,
+    //     &[user.clone(), user_position_pda.clone(), system_prog.clone()],
+    //     &[user_position_seeds])?;
+    // msg!("user position pda created!!");
 
     Ok(())
 }
