@@ -44,15 +44,23 @@ pub fn deposit_sol(program_id:&Pubkey, accounts:&[AccountInfo],deposit_amount:u6
     if *lst_mint_pda.key!=lst_mint_derived{
         return Err(LSTErrors::LSTMintPdaMismatch.into());
     }
-
+    let rent=Rent::get()?;
     let mut lst_manager_data=LSTManager::try_from_slice(&lst_manager_pda.data.borrow())?;
-    let total_sol_in_protocol=lst_manager_data.total_sol_staked + lst_manager_vault_pda.lamports();
+    // let total_sol_in_protocol=lst_manager_data.total_sol_staked + lst_manager_vault_pda.lamports();
+    let total_sol_in_protocol=lst_manager_data.total_sol_staked + (lst_manager_vault_pda.lamports() - rent.minimum_balance(0));
     let total_lst_in_protocol=Mint::unpack(&lst_mint_pda.data.borrow())?.supply;
 
     //exchange rates
     let sol_to_lst_rate=sol_to_lst_rate(total_sol_in_protocol, total_lst_in_protocol)?;
     let lst_tokens_to_mint=calculate_sol_to_lst_amounts(deposit_amount, sol_to_lst_rate)?;
     
+    msg!("total_sol_staked : {}",lst_manager_data.total_sol_staked);
+    msg!("total_sol_in_vault : {}",lst_manager_vault_pda.lamports());
+    msg!("total_lst_in_protocol : {}",total_lst_in_protocol);
+    msg!("total_sol_in_protocol : {}",total_sol_in_protocol);
+    msg!("sol_to_lst_rate : {}",sol_to_lst_rate);
+    msg!("lst tokens to mint : {}",lst_tokens_to_mint);
+
     // let rate_of_1_sol:u64;
     // if lst_manager_data.total_lst_supply==0{
     //     rate_of_1_sol=1; 

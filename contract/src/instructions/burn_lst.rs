@@ -23,6 +23,7 @@ pub fn burn_lst(program_id:&Pubkey, accounts:&[AccountInfo], burn_lst_amount:u64
     let user_withdraw_request_pda=next_account_info(&mut accounts_iter)?;
     let epoch_withdraw_pda=next_account_info(&mut accounts_iter)?;
     let system_prog=next_account_info(&mut accounts_iter)?;
+    // let system_prog=next_account_info(&mut accounts_iter)?;
 
     if !user.is_signer{
         return Err(ProgramError::MissingRequiredSignature);
@@ -69,13 +70,20 @@ pub fn burn_lst(program_id:&Pubkey, accounts:&[AccountInfo], burn_lst_amount:u64
 
     //burn lst tokens from user's lst ata
     let mut lst_manager_data=LSTManager::try_from_slice(&lst_manager_pda.data.borrow())?;
-    let total_sol_in_protocol=lst_manager_data.total_sol_staked + lst_manager_vault_pda.lamports();
+    let total_sol_in_protocol=lst_manager_data.total_sol_staked + (lst_manager_vault_pda.lamports() - rent.minimum_balance(0));
     let total_lst_in_protocol=Mint::unpack(&lst_mint_pda.data.borrow())?.supply;
 
     //exchange rates
     let lst_to_sol_rate=lst_to_sol_rate(total_sol_in_protocol, total_lst_in_protocol)?;
     let sol_amount_to_unstake=calculate_lst_to_sol_amounts(burn_lst_amount, lst_to_sol_rate)?;
     
+    msg!("total_sol_staked : {}",lst_manager_data.total_sol_staked);
+    msg!("total_sol_in_vault : {}",lst_manager_vault_pda.lamports()-rent.minimum_balance(0));
+    msg!("total_lst_in_protocol : {}",total_lst_in_protocol);
+    msg!("total_sol_in_protocol : {}",total_sol_in_protocol);
+    msg!("lst_to_sol_rate : {}",lst_to_sol_rate);
+    msg!("sol amount to unstake : {}",sol_amount_to_unstake);
+
     let burn_lst_tokens_ix=burn_checked(&spl_token::ID,
         user_lst_ata.key, lst_mint_pda.key, user.key,
         &[], burn_lst_amount, 9)?;
@@ -123,8 +131,8 @@ pub fn burn_lst(program_id:&Pubkey, accounts:&[AccountInfo], burn_lst_amount:u64
         invoke_signed(&create_epoch_withdraw_pda_ix,  
             &[user.clone(), epoch_withdraw_pda.clone(), system_prog.clone()],
             &[epoch_withdraw_seeds])?;
-        msg!("epoch withdraw pda created!"); 
         epoch_withdraw_pda_data=EpochWithdraw{sol_amount_to_unstake:sol_amount_to_unstake,requested_epoch:clock.epoch,finalised:false};
+        msg!("epoch withdraw pda created!"); 
     }else{
         epoch_withdraw_pda_data=EpochWithdraw::try_from_slice(&epoch_withdraw_pda.data.borrow())?;
         epoch_withdraw_pda_data.sol_amount_to_unstake+=sol_amount_to_unstake;
@@ -137,11 +145,6 @@ pub fn burn_lst(program_id:&Pubkey, accounts:&[AccountInfo], burn_lst_amount:u64
     // withdraw pda={user recieve address, sol to send, withdraw status:pending/completed, cancelled}
     // create a epoch withdraw pda that stores every epoch details to unstake and withdraw by
     // splitting a stake account.
-    
-    //another unstake ix for admin to call,
-    //create a split account from main stake account with amount stored in epoch withdraw, 
-    // and set the status in epoch withdraw pda to finalized. so that now nobody can request for 
-    // withdraw in this epoch, after now all withdraw requests must be stored in next epoch pda.
         
     lst_manager_data.total_lst_supply-=burn_lst_amount;
     lst_manager_data.serialize(&mut *lst_manager_pda.data.borrow_mut())?;

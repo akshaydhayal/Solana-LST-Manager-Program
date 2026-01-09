@@ -9,15 +9,16 @@ use solana_program::{
 use spl_token::instruction::{mint_to_checked , initialize_mint2};
 use borsh::{BorshDeserialize, BorshSerialize};
 
-use crate::{error::LSTErrors, state::lst_manager::LSTManager};
+use crate::{error::LSTErrors, state::{lst_manager::LSTManager, stake_registry_record::StakeRegistryRecord}};
 
-pub fn stake_vault_sol(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_bump:u8, lst_manager_vault_bump:u8, stake_acc_bump:u8)->ProgramResult{
+pub fn stake_vault_sol(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_bump:u8, lst_manager_vault_bump:u8, stake_acc_bump:u8, stake_registry_record_bump:u8)->ProgramResult{
     let mut accounts_iter=accounts.iter();
     let user=next_account_info(&mut accounts_iter)?;
     let lst_manager_pda=next_account_info(&mut accounts_iter)?;
     let lst_manager_vault_pda=next_account_info(&mut accounts_iter)?;
     let stake_acc_pda=next_account_info(&mut accounts_iter)?;
     let validator_vote_acc=next_account_info(&mut accounts_iter)?;
+    let stake_registry_record_pda=next_account_info(&mut accounts_iter)?;
     
     let sys_var_rent=next_account_info(&mut accounts_iter)?;
     let sys_var_clock=next_account_info(&mut accounts_iter)?;
@@ -51,6 +52,12 @@ pub fn stake_vault_sol(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_
     let lst_manager_vault_derived=Pubkey::create_program_address(lst_manager_vault_seeds,program_id)?;
     msg!("lst manager vault derived : {}",lst_manager_vault_derived);
     msg!("lst manager vault pda owner : {}",lst_manager_vault_pda.owner);
+
+    let stake_registry_record_seeds=&["stake_registry_record".as_bytes(), lst_manager_pda.key.as_ref(), &stake_registry_record_bump.to_le_bytes()];
+    let stake_registry_record_derived=Pubkey::create_program_address(stake_registry_record_seeds, program_id)?;
+    if *stake_registry_record_pda.key!=stake_registry_record_derived{
+        return Err(LSTErrors::StakeRegistryPdaMismatch.into());
+    }
     
     if *lst_manager_vault_pda.key!=lst_manager_vault_derived{
         return Err(LSTErrors::LSTManagerVaultPdaMismatch.into());
@@ -65,10 +72,13 @@ pub fn stake_vault_sol(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_
     let clock=Clock::get()?;
     let curr_epoch=clock.epoch;
     msg!("current epoch : {}",curr_epoch);
-    let stake_acc_seeds=&["stake_acc".as_bytes(), &curr_epoch.to_le_bytes(), &lst_manager_pda.key.to_bytes(), &[stake_acc_bump]];
+    
+    let mut stake_registry_record_data=StakeRegistryRecord::try_from_slice(&stake_registry_record_pda.data.borrow())?; 
+    // let stake_acc_seeds=&["stake_acc".as_bytes(), &curr_epoch.to_le_bytes(), &lst_manager_pda.key.to_bytes(), &[stake_acc_bump]];
+    let stake_acc_seeds=&["stake_acc".as_bytes(), &stake_registry_record_data.next_stake_index.to_le_bytes(), &lst_manager_pda.key.to_bytes(), &[stake_acc_bump]];
     let stake_acc_pda_derived=Pubkey::create_program_address(stake_acc_seeds, program_id)?;
     if *stake_acc_pda.key!=stake_acc_pda_derived{
-        return Err(ProgramError::InvalidSeeds);
+        return Err(LSTErrors::StakePdaMismatch.into());
     }
 
     // let create_stake_acc_ix=create_account(lst_manager_vault_pda.key, stake_acc.key, 
@@ -102,5 +112,8 @@ pub fn stake_vault_sol(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_
     let mut lst_manager_data=LSTManager::try_from_slice(&lst_manager_pda.data.borrow_mut())?;
     lst_manager_data.total_sol_staked+=stake_amount;
     lst_manager_data.serialize(&mut *lst_manager_pda.data.borrow_mut())?;
+    
+    stake_registry_record_data.next_stake_index+=1;
+    stake_registry_record_data.serialize(&mut *stake_registry_record_pda.data.borrow_mut())?;
     Ok(())
 }

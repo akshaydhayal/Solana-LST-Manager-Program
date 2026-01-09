@@ -4,15 +4,15 @@ use solana_program::{
 use spl_token::instruction::{initialize_mint2};
 use borsh::{BorshDeserialize, BorshSerialize};
 
-use crate::{error::LSTErrors, state::lst_manager::LSTManager};
+use crate::{error::LSTErrors, state::{lst_manager::LSTManager, stake_registry_record::StakeRegistryRecord}};
 
-pub fn initialise_lst(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_bump:u8, lst_manager_vault_bump:u8, lst_mint_bump:u8)->ProgramResult{
+pub fn initialise_lst(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_bump:u8, lst_manager_vault_bump:u8, lst_mint_bump:u8, stake_registry_record_bump:u8)->ProgramResult{
     let mut accounts_iter=accounts.iter();
     let user=next_account_info(&mut accounts_iter)?;
-    let stake_manager_pda=next_account_info(&mut accounts_iter)?;
     let lst_manager_pda=next_account_info(&mut accounts_iter)?;
     let lst_manager_vault_pda=next_account_info(&mut accounts_iter)?;
     let lst_mint_pda=next_account_info(&mut accounts_iter)?;
+    let stake_registry_record_pda=next_account_info(&mut accounts_iter)?;
     let system_prog=next_account_info(&mut accounts_iter)?;
     let token_prog=next_account_info(&mut accounts_iter)?;
 
@@ -43,20 +43,20 @@ pub fn initialise_lst(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_b
     if *lst_mint_pda.key!=lst_mint_derived{
         return Err(LSTErrors::LSTMintPdaMismatch.into());
     }
-    //@q do we need to derive stake manager pda
-    // let stake_manager_seeds=&["manager".as_bytes(), &stake_manager_bump.to_le_bytes()];
-    // let stake_manager_derived=Pubkey::create_program_address(stake_manager_seeds,program_id)?;
-    // if *stake_manager_pda.key!=stake_manager_derived{
-    //     return Err(LSTErrors::StakeManagerPdaMismatch.into());
-    // }
 
+    let stake_registry_record_seeds=&["stake_registry_record".as_bytes(), lst_manager_pda.key.as_ref(), &stake_registry_record_bump.to_le_bytes()];
+    let stake_registry_record_derived=Pubkey::create_program_address(stake_registry_record_seeds, program_id)?;
+    if *stake_registry_record_pda.key!=stake_registry_record_derived{
+        return Err(LSTErrors::StakeRegistryPdaMismatch.into());
+    }
+   
     //create lst manager pda
     let rent=Rent::get()?;
     let create_lst_manager_ix=Instruction::new_with_bincode(
         *system_prog.key,
         &SystemInstruction::CreateAccount {
-            lamports: rent.minimum_balance(LSTManager::LST_MANAGER_SIZE),
-            space: LSTManager::LST_MANAGER_SIZE as u64,
+            lamports: rent.minimum_balance(LSTManager::LEN),
+            space: LSTManager::LEN as u64,
             owner: *program_id
         },
         vec![
@@ -85,6 +85,24 @@ pub fn initialise_lst(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_b
         // &[lst_manager_seeds])?;  
         &[lst_manager_vault_seeds])?;  
     msg!("lst manager vault pda created");
+    
+    //create stake registory record pda
+    let create_stake_registry_record_pda_ix=Instruction::new_with_bincode(
+        *system_prog.key,
+        &SystemInstruction::CreateAccount { 
+            lamports: rent.minimum_balance(StakeRegistryRecord::LEN),
+            space: StakeRegistryRecord::LEN as u64, owner: *program_id 
+        },
+        vec![
+            AccountMeta{pubkey:*user.key, is_signer:true, is_writable:true},
+            AccountMeta{pubkey:*stake_registry_record_pda.key, is_signer:true, is_writable:true}
+        ]);
+    invoke_signed(&create_stake_registry_record_pda_ix,
+        &[user.clone(), stake_registry_record_pda.clone(), system_prog.clone()],
+        &[stake_registry_record_seeds])?;  
+    msg!("stake registry record pda created");
+
+    let stake_registry_record_data=StakeRegistryRecord{next_stake_index:1, next_split_index:1};
 
     //create lst mint pda
     let create_lst_mint_pda_ix=Instruction::new_with_bincode(
@@ -116,11 +134,11 @@ pub fn initialise_lst(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_b
 
     let lst_manager_pda_data=LSTManager{
         admin:*user.key,
-        stake_manager:*stake_manager_pda.key,
         lst_mint:*lst_mint_pda.key,
         total_sol_staked:0,
         total_lst_supply:0
     };
+    stake_registry_record_data.serialize(&mut *stake_registry_record_pda.data.borrow_mut())?;
     lst_manager_pda_data.serialize(&mut *lst_manager_pda.data.borrow_mut())?;
     Ok(())
 }

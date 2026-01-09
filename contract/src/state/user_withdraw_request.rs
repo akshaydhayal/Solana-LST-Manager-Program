@@ -8,6 +8,7 @@ pub struct UserWithdrawRequest{
     pub requested_epoch:u64,
     pub withdraw_status:UserWithdrawStatus
 }
+
 impl UserWithdrawRequest{
     pub const LEN:usize=49;
 }

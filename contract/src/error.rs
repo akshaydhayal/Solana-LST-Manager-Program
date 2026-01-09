@@ -15,14 +15,26 @@ pub enum LSTErrors{
     #[error("given lst mint pda seeds do not match with correct lst mint seeds")]
     LSTMintPdaMismatch,
     
-    #[error("given stake manager pda seeds do not match with correct stake manager seeds")]
-    StakeManagerPdaMismatch,
+    // #[error("given stake manager pda seeds do not match with correct stake manager seeds")]
+    // StakeManagerPdaMismatch,
 
     #[error("given user withdraw request pda seeds do not match with correct user withdraw request seeds")]
     UserWithdrawRequestPdaMismatch,
 
     #[error("given epoch withdraw pda seeds do not match with correct epoch withdraw seeds")]
-    EpochWithdrawPdaMismatch
+    EpochWithdrawPdaMismatch,
+    
+    #[error("for given epoch withdraw has already been finalised")]
+    EpochWithdrawAlreadyFinalised,
+
+    #[error("given stake acc pda seeds do not match with correct stake account seeds")]
+    StakePdaMismatch,
+
+    #[error("given split stake acc pda seeds do not match with correct split stake account seeds")]
+    SplitStakePdaMismatch,
+
+    #[error("given stake registry record pda seeds do not match with correct stake registory seeds")]
+    StakeRegistryPdaMismatch,
 }
 
 impl From<LSTErrors> for ProgramError{

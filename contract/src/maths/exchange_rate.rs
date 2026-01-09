@@ -29,6 +29,9 @@ pub fn calculate_lst_to_sol_amounts(lst_amount_atomic:u64, rate:u128)->Result<u6
 }
 
 pub fn sol_to_lst_rate(total_sol_lamports:u64, total_lst_supply_atomic:u64)->Result<u128,ProgramError>{
+    if total_lst_supply_atomic==0{
+        return Ok(SCALE_RATE);
+    }
     let rate=(total_lst_supply_atomic as u128).checked_mul(SCALE_RATE).ok_or(ProgramError::ArithmeticOverflow)?
     .checked_div(total_sol_lamports as u128).ok_or(ProgramError::ArithmeticOverflow)?;
     Ok(rate)
