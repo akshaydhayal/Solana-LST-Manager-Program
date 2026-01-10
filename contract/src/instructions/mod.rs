@@ -3,3 +3,4 @@ pub mod deposit_sol;
 pub mod stake_vault_sol;
 pub mod burn_lst;
 pub mod unstake_sol;
+pub mod withdraw_from_split_stake;

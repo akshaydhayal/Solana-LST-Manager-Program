@@ -111,10 +111,19 @@ pub fn unstake_sol(program_id:&Pubkey, accounts:&[AccountInfo], stake_acc_index:
     msg!("split stake account created!");
     
     //splitting thr main stake account
+    let available_amount_to_split=stake_acc.lamports()-rent.minimum_balance(200) -1;
+    let mut amount_to_split=epoch_withdraw_pda_data.sol_amount_to_unstake;
+    msg!("sol amount to split from stake acc : {}",amount_to_split);
+    msg!("available_amount_to_split : {}", available_amount_to_split);
+    if amount_to_split > available_amount_to_split{
+        amount_to_split=available_amount_to_split; 
+        //     return Err(LSTErrors::EpochWithdrawAmountExceedsStakeDelegatedAmount.into());
+    }
+
     let split_stake_acc_ix=Instruction::new_with_bincode(
         stake::program::ID,
+        &stake::instruction::StakeInstruction::Split(amount_to_split),
         // &stake::instruction::StakeInstruction::Split(epoch_withdraw_pda_data.sol_amount_to_unstake),
-        &stake::instruction::StakeInstruction::Split(2000),
         vec![
             AccountMeta{pubkey:*stake_acc.key, is_signer:false, is_writable:true},
             AccountMeta{pubkey:*split_stake_acc.key, is_signer:false, is_writable:true},
@@ -143,10 +152,12 @@ pub fn unstake_sol(program_id:&Pubkey, accounts:&[AccountInfo], stake_acc_index:
     stake_registry_record_data.next_split_index+=1;
     stake_registry_record_data.serialize(&mut *stake_registry_record_pda.data.borrow_mut())?;
 
-    lst_manager_data.total_sol_staked-=epoch_withdraw_pda_data.sol_amount_to_unstake;
+    // lst_manager_data.total_sol_staked-=epoch_withdraw_pda_data.sol_amount_to_unstake;
+    lst_manager_data.total_sol_staked-=amount_to_split;
     lst_manager_data.serialize(&mut *lst_manager_pda.data.borrow_mut())?;
     
     epoch_withdraw_pda_data.finalised=true; 
     epoch_withdraw_pda_data.serialize(&mut *epoch_withdraw_pda.data.borrow_mut())?;
+
     Ok(())
 }

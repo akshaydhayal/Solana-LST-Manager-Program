@@ -1,3 +1,10 @@
+where to put the ix to withdrawing from split accounts to withdrawl vault- cant put in unstake ix
+as if main stake account is in activated state, then split account will be in deactivating state after 
+unstake ix, and not possible to withdraw from deactivating split stake acc, to withdraw from it, it must be 
+in fully deactivated state, and then call a withdraw ix from it.
+so maybe a new ix to for admin to call: withdraw from split state acc to withdrawl vault pda
+
+
 🔟 Recommended build order (DO NOT SKIP)
 
 1️⃣ Reuse your Stake Manager as-is

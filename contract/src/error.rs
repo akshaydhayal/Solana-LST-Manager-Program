@@ -12,11 +12,11 @@ pub enum LSTErrors{
     #[error("given lst manager vault pda seeds do not match with correct lst manager vault seeds")]
     LSTManagerVaultPdaMismatch,
 
+    #[error("given lst manager user withdrawl vault pda seeds do not match with correct user vault withdrawl seeds")]
+    LSTManagerUserWithdrawlVaultPdaMismatch,
+
     #[error("given lst mint pda seeds do not match with correct lst mint seeds")]
     LSTMintPdaMismatch,
-    
-    // #[error("given stake manager pda seeds do not match with correct stake manager seeds")]
-    // StakeManagerPdaMismatch,
 
     #[error("given user withdraw request pda seeds do not match with correct user withdraw request seeds")]
     UserWithdrawRequestPdaMismatch,
@@ -35,6 +35,9 @@ pub enum LSTErrors{
 
     #[error("given stake registry record pda seeds do not match with correct stake registory seeds")]
     StakeRegistryPdaMismatch,
+
+    #[error("the epoch withdraw amount exceeds the stake account delegated amount")]
+    EpochWithdrawAmountExceedsStakeDelegatedAmount,
 }
 
 impl From<LSTErrors> for ProgramError{

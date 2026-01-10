@@ -20,12 +20,13 @@ describe("lst manager tests",()=>{
     let lst_manager_prog:PublicKey;
     
     let lst_manager_pda:PublicKey;
-    // let stake_manager_pda:PublicKey;
     let lst_manager_pda_vault:PublicKey;
+    let lst_manager_user_withdrawl_pda_vault:PublicKey;
     let stake_registry_record_pda:PublicKey;
     
     let lst_manager_bump:number;
     let lst_manager_vault_bump:number;
+    let lst_manager_user_withdrawl_vault_bump:number;
     let stake_registry_record_bump:number;
     
     let lst_mint_pda:PublicKey;
@@ -33,16 +34,18 @@ describe("lst manager tests",()=>{
     let vote_acc:PublicKey;
 
     let connection:Connection;
-    beforeAll(async()=>{
+    beforeAll(async()=>{ 
         user=Keypair.fromSecretKey(Uint8Array.from([48,182,182,234,169,224,236,113,52,199,47,66,39,2,163,52,183,44,45,27,127,49,133,151,64,70,248,16,46,218,234,198,42,180,5,68,243,235,189,56,197,37,17,85,205,189,100,191,64,74,171,3,37,193,199,195,213,54,156,198,228,15,248,188]));
-        lst_manager_prog=new PublicKey("yjmULZEVds4fsgU5gj81C9JAV2BmjtnHgi7VJUePDwT");
-        // stake_manager_pda=new PublicKey("5AMSMnbG9ZcV5LsuwQNfBGxtqeBzoRuhJcggajkyqnu8");
+        lst_manager_prog=new PublicKey("DfknHZAbr5LiHxPXXsVrAhs2o93RUmffDzMwZQzMSWv7");
+        // stake_manager_pda=new PublicKey("5AMSMnbG9ZcV5LsuwQNfBGxtqeBzoRuhJcggajkyqnu8"); 
     
         connection=new Connection(clusterApiUrl("devnet"),"confirmed");
         vote_acc=new PublicKey("DSQ5BLBM6UcuWP2SNpmf3TJeMbqbwTFGzVqFGufyNCgk");
 
         [lst_manager_pda,lst_manager_bump]=PublicKey.findProgramAddressSync([Buffer.from("lst_manager")],lst_manager_prog);
         [lst_manager_pda_vault,lst_manager_vault_bump]=PublicKey.findProgramAddressSync([Buffer.from("lst_manager_vault"), lst_manager_pda.toBuffer()], lst_manager_prog);
+        [lst_manager_user_withdrawl_pda_vault,lst_manager_user_withdrawl_vault_bump]=PublicKey.findProgramAddressSync([Buffer.from("lst_manager_user_withdrawl_vault"), lst_manager_pda.toBuffer()], lst_manager_prog);
+        
         [stake_registry_record_pda,stake_registry_record_bump]=PublicKey.findProgramAddressSync([Buffer.from("stake_registry_record"), lst_manager_pda.toBuffer()], lst_manager_prog);
         [lst_mint_pda,lst_mint_pda_bump]=PublicKey.findProgramAddressSync([Buffer.from("lst_mint"), lst_manager_pda.toBuffer()],lst_manager_prog);
 
@@ -50,6 +53,7 @@ describe("lst manager tests",()=>{
         console.log("lst manager prog : ",lst_manager_prog.toBase58());
         console.log("lst manager pda : ",lst_manager_pda.toBase58());
         console.log("lst manager pda vault : ",lst_manager_pda_vault.toBase58());
+        console.log("lst_manager_user_withdrawl_pda_vault : ",lst_manager_user_withdrawl_pda_vault.toBase58());
         console.log("stake_registry_record_pda : ",stake_registry_record_pda.toBase58());
         console.log("lst mint pda : ",lst_mint_pda.toBase58());
     })
@@ -62,6 +66,8 @@ describe("lst manager tests",()=>{
                 // {pubkey:stake_manager_pda, isSigner:false, isWritable:true},
                 {pubkey:lst_manager_pda, isSigner:false, isWritable:true},
                 {pubkey:lst_manager_pda_vault, isSigner:false, isWritable:true},
+                {pubkey:lst_manager_user_withdrawl_pda_vault, isSigner:false, isWritable:true},
+
                 {pubkey:lst_mint_pda, isSigner:false, isWritable:true},
                 {pubkey:stake_registry_record_pda, isSigner:false, isWritable:true},
                 {pubkey:SystemProgram.programId, isSigner:false, isWritable:false},
@@ -71,6 +77,7 @@ describe("lst manager tests",()=>{
                 Buffer.from([0]),
                 Buffer.from([lst_manager_bump]),
                 Buffer.from([lst_manager_vault_bump]),
+                Buffer.from([lst_manager_user_withdrawl_vault_bump]),
                 Buffer.from([lst_mint_pda_bump]),
                 Buffer.from([stake_registry_record_bump]),
             ])
@@ -162,7 +169,7 @@ describe("lst manager tests",()=>{
             ],
             data:Buffer.concat([
                 Buffer.from([2]),
-                Buffer.from([lst_manager_bump]),
+                Buffer.from([lst_manager_bump]), 
                 Buffer.from([lst_manager_vault_bump]),
                 Buffer.from([stake_acc_bump]),
                 Buffer.from([stake_registry_record_bump]),
@@ -275,6 +282,49 @@ describe("lst manager tests",()=>{
         let txStatus=await connection.sendRawTransaction(tx.serialize());
         await connection.confirmTransaction(txStatus,"confirmed");
         console.log("unstake sol from vote account tx : ",txStatus);
+    }),
+
+    it("withdraw sol from deactivated split accounts by admin",async()=>{
+        //@c FIND THE SPLIT STAKE ACC INDEX FRO WHICH WE HAVE TO WITHDRAW,
+        // FOR NOW MOCKING FOR SPLIT INDEX 1
+        // client work here: check which split stake account is in deactivate state. and make it to
+        // withdraw to user withdraw vault, simpe like split 1 , split 2, split 3 all in deactivate
+        // state, send each split account index to this ix simply. and this will with withdraw to withdrawl vault
+        //client can make a optimsation like check from index 1 to split index index in stake registry pda.
+        // for all these index, make admin to call this instruction.
+    
+        let withdrawl_split_stake_acc_index=1;
+        let serialised_split_acc_index=borsh.serialize(serialiseAmountSchema, {amount:withdrawl_split_stake_acc_index});
+        console.log("serialised_split_acc_index : ",serialised_split_acc_index);
+        let [split_stake_acc_pda, split_stake_acc_bump]=PublicKey.findProgramAddressSync([Buffer.from("split_stake_acc"), Buffer.from(serialised_split_acc_index), lst_manager_pda.toBuffer()],lst_manager_prog);        
+        console.log("split stake_acc_pda : ",split_stake_acc_pda.toBase58());
+
+        let ix=new TransactionInstruction({
+            programId:lst_manager_prog,
+            keys:[
+                {pubkey:user.publicKey, isSigner:true, isWritable:true},
+                {pubkey:lst_manager_pda, isSigner:false, isWritable:true},
+                {pubkey:lst_manager_user_withdrawl_pda_vault, isSigner:false, isWritable:true},
+                {pubkey:split_stake_acc_pda, isSigner:false, isWritable:true},
+
+                {pubkey:SYSVAR_CLOCK_PUBKEY, isSigner:false, isWritable:false},
+                {pubkey:SYSVAR_STAKE_HISTORY_PUBKEY, isSigner:false, isWritable:false},
+                {pubkey:StakeProgram.programId, isSigner:false, isWritable:false}
+            ],
+            data:Buffer.concat([
+                Buffer.from([5]),
+                Buffer.from(serialised_split_acc_index),
+                Buffer.from([lst_manager_bump]),
+                Buffer.from([lst_manager_user_withdrawl_vault_bump]),
+                Buffer.from([split_stake_acc_bump]),
+            ])
+        })
+        let tx=new Transaction().add(ix);
+        tx.recentBlockhash=(await connection.getLatestBlockhash()).blockhash;
+        tx.sign(user);
+        let txStatus=await connection.sendRawTransaction(tx.serialize());
+        await connection.confirmTransaction(txStatus,"confirmed");
+        console.log("withdraw sol from split stake account tx : ",txStatus);
     })
 
 })

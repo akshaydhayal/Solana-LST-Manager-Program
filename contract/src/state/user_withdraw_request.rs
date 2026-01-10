@@ -4,7 +4,7 @@ use solana_program::pubkey::Pubkey;
 #[derive(BorshSerialize, BorshDeserialize)]
 pub struct UserWithdrawRequest{
     pub user:Pubkey,
-    pub sol_amount_to_withdraw:u64,
+    pub sol_amount_user_gets:u64,
     pub requested_epoch:u64,
     pub withdraw_status:UserWithdrawStatus
 }

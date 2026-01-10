@@ -75,14 +75,14 @@ pub fn burn_lst(program_id:&Pubkey, accounts:&[AccountInfo], burn_lst_amount:u64
 
     //exchange rates
     let lst_to_sol_rate=lst_to_sol_rate(total_sol_in_protocol, total_lst_in_protocol)?;
-    let sol_amount_to_unstake=calculate_lst_to_sol_amounts(burn_lst_amount, lst_to_sol_rate)?;
+    let sol_amount_user_gets=calculate_lst_to_sol_amounts(burn_lst_amount, lst_to_sol_rate)?;
     
     msg!("total_sol_staked : {}",lst_manager_data.total_sol_staked);
     msg!("total_sol_in_vault : {}",lst_manager_vault_pda.lamports()-rent.minimum_balance(0));
     msg!("total_lst_in_protocol : {}",total_lst_in_protocol);
     msg!("total_sol_in_protocol : {}",total_sol_in_protocol);
     msg!("lst_to_sol_rate : {}",lst_to_sol_rate);
-    msg!("sol amount to unstake : {}",sol_amount_to_unstake);
+    msg!("sol amount user gets : {}",sol_amount_user_gets);
 
     let burn_lst_tokens_ix=burn_checked(&spl_token::ID,
         user_lst_ata.key, lst_mint_pda.key, user.key,
@@ -105,7 +105,7 @@ pub fn burn_lst(program_id:&Pubkey, accounts:&[AccountInfo], burn_lst_amount:u64
 
         user_withdraw_request_pda_data=UserWithdrawRequest{
             user:*user.key,
-            sol_amount_to_withdraw:sol_amount_to_unstake,
+            sol_amount_user_gets:sol_amount_user_gets,
             requested_epoch:clock.epoch,
             withdraw_status:UserWithdrawStatus::PENDING
         };
@@ -113,10 +113,10 @@ pub fn burn_lst(program_id:&Pubkey, accounts:&[AccountInfo], burn_lst_amount:u64
         user_withdraw_request_pda_data=UserWithdrawRequest::try_from_slice(&user_withdraw_request_pda.data.borrow())?;
         //if old request is completed, reset the pda, else just add info to old reqyest pda data
         if user_withdraw_request_pda_data.withdraw_status==UserWithdrawStatus::PENDING{
-            user_withdraw_request_pda_data.sol_amount_to_withdraw+=sol_amount_to_unstake;
+            user_withdraw_request_pda_data.sol_amount_user_gets+=sol_amount_user_gets;
             user_withdraw_request_pda_data.requested_epoch=clock.epoch;
         }else if user_withdraw_request_pda_data.withdraw_status==UserWithdrawStatus::COMPLETED{
-            user_withdraw_request_pda_data.sol_amount_to_withdraw=sol_amount_to_unstake;
+            user_withdraw_request_pda_data.sol_amount_user_gets=sol_amount_user_gets;
             user_withdraw_request_pda_data.withdraw_status=UserWithdrawStatus::PENDING;
             user_withdraw_request_pda_data.requested_epoch=clock.epoch;
         }
@@ -131,11 +131,11 @@ pub fn burn_lst(program_id:&Pubkey, accounts:&[AccountInfo], burn_lst_amount:u64
         invoke_signed(&create_epoch_withdraw_pda_ix,  
             &[user.clone(), epoch_withdraw_pda.clone(), system_prog.clone()],
             &[epoch_withdraw_seeds])?;
-        epoch_withdraw_pda_data=EpochWithdraw{sol_amount_to_unstake:sol_amount_to_unstake,requested_epoch:clock.epoch,finalised:false};
-        msg!("epoch withdraw pda created!"); 
+        epoch_withdraw_pda_data=EpochWithdraw{sol_amount_to_unstake:sol_amount_user_gets,requested_epoch:clock.epoch,finalised:false};
+        msg!("epoch withdraw pda created!");   
     }else{
         epoch_withdraw_pda_data=EpochWithdraw::try_from_slice(&epoch_withdraw_pda.data.borrow())?;
-        epoch_withdraw_pda_data.sol_amount_to_unstake+=sol_amount_to_unstake;
+        epoch_withdraw_pda_data.sol_amount_to_unstake+=sol_amount_user_gets;
     }
 
     //steps:

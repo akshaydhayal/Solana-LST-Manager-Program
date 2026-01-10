@@ -6,11 +6,13 @@ use borsh::{BorshDeserialize, BorshSerialize};
 
 use crate::{error::LSTErrors, state::{lst_manager::LSTManager, stake_registry_record::StakeRegistryRecord}};
 
-pub fn initialise_lst(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_bump:u8, lst_manager_vault_bump:u8, lst_mint_bump:u8, stake_registry_record_bump:u8)->ProgramResult{
+pub fn initialise_lst(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_bump:u8, lst_manager_vault_bump:u8, lst_manager_user_withdrawl_vault_bump:u8, lst_mint_bump:u8, stake_registry_record_bump:u8)->ProgramResult{
     let mut accounts_iter=accounts.iter();
     let user=next_account_info(&mut accounts_iter)?;
     let lst_manager_pda=next_account_info(&mut accounts_iter)?;
     let lst_manager_vault_pda=next_account_info(&mut accounts_iter)?;
+    let lst_manager_user_withdrawl_vault_pda=next_account_info(&mut accounts_iter)?;
+    
     let lst_mint_pda=next_account_info(&mut accounts_iter)?;
     let stake_registry_record_pda=next_account_info(&mut accounts_iter)?;
     let system_prog=next_account_info(&mut accounts_iter)?;
@@ -36,6 +38,11 @@ pub fn initialise_lst(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_b
     let lst_manager_vault_derived=Pubkey::create_program_address(lst_manager_vault_seeds, program_id)?;
     if *lst_manager_vault_pda.key!=lst_manager_vault_derived{
         return Err(LSTErrors::LSTManagerVaultPdaMismatch.into());
+    }
+    let lst_manager_user_withdrawl_vault_seeds=&["lst_manager_user_withdrawl_vault".as_bytes(), lst_manager_pda.key.as_ref(), &lst_manager_user_withdrawl_vault_bump.to_le_bytes()];
+    let lst_manager_user_withdrawl_vault_derived=Pubkey::create_program_address(lst_manager_user_withdrawl_vault_seeds, program_id)?;
+    if *lst_manager_user_withdrawl_vault_pda.key!=lst_manager_user_withdrawl_vault_derived{
+        return Err(LSTErrors::LSTManagerUserWithdrawlVaultPdaMismatch.into());
     }
 
     let lst_mint_seeds=&["lst_mint".as_bytes(), lst_manager_pda.key.as_ref(), &lst_mint_bump.to_le_bytes()];
@@ -85,6 +92,22 @@ pub fn initialise_lst(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_b
         // &[lst_manager_seeds])?;  
         &[lst_manager_vault_seeds])?;  
     msg!("lst manager vault pda created");
+
+    //create lst manager user withdrawl vault pda
+    let create_lst_manager_user_withdrawl_vault_pda_ix=Instruction::new_with_bincode(
+        *system_prog.key,
+        &SystemInstruction::CreateAccount {
+            // lamports: rent.minimum_balance(0), space: 0, owner: *program_id 
+            lamports: rent.minimum_balance(0), space: 0, owner: *system_prog.key 
+        },
+        vec![
+            AccountMeta{pubkey:*user.key, is_signer:true, is_writable:true},
+            AccountMeta{pubkey:*lst_manager_user_withdrawl_vault_pda.key, is_signer:true, is_writable:true}
+        ]);
+    invoke_signed(&create_lst_manager_user_withdrawl_vault_pda_ix,
+        &[user.clone(), lst_manager_user_withdrawl_vault_pda.clone(), system_prog.clone()],
+        &[lst_manager_user_withdrawl_vault_seeds])?;  
+    msg!("lst manager user withdrawl vault pda created");
     
     //create stake registory record pda
     let create_stake_registry_record_pda_ix=Instruction::new_with_bincode(

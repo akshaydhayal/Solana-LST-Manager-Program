@@ -71,7 +71,7 @@ pub fn stake_vault_sol(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_
     //we will first create a stake pda account to whom rent+stake amount will be payed by vault pda
     let clock=Clock::get()?;
     let curr_epoch=clock.epoch;
-    msg!("current epoch : {}",curr_epoch);
+    msg!("current epoch : {}",curr_epoch);   
     
     let mut stake_registry_record_data=StakeRegistryRecord::try_from_slice(&stake_registry_record_pda.data.borrow())?; 
     // let stake_acc_seeds=&["stake_acc".as_bytes(), &curr_epoch.to_le_bytes(), &lst_manager_pda.key.to_bytes(), &[stake_acc_bump]];
