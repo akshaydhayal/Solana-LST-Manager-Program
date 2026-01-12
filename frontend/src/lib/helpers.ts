@@ -1,6 +1,6 @@
-import { lstManagerPda, lstManagerVaultPda, lstMintPda, PROGRAM_ID } from "./constants";
+import { lstManagerPda, lstManagerVaultPda, lstMintPda, PROGRAM_ID, stakeRegistryRecordPda } from "./constants";
 import * as borsh from "borsh";
-import { lstManagerPdaSchema, UserWithdrawRequestPdaSchema } from "./borshSchema";
+import { lstManagerPdaSchema, StakeRegistryRecordSchema, UserWithdrawRequestPdaSchema, valueToU64Schema } from "./borshSchema";
 import * as spl from "@solana/spl-token";
 import { PublicKey, type Connection } from "@solana/web3.js";
 import { Buffer } from "buffer";
@@ -59,3 +59,15 @@ export async function checkIfUserIsAdmin(connection:Connection, user:PublicKey){
     console.log("status : ",adminPub.toBase58()==user.toBase58());
     return isUserAdmin;
 }
+
+export async function getNextStakePdaAccount(connection:Connection){
+    let stakeRegistryPdaData=await connection.getAccountInfo(stakeRegistryRecordPda);
+    let deserialisedStakeRegistryPdaData=borsh.deserialize(StakeRegistryRecordSchema, stakeRegistryPdaData?.data);
+    let nextStakeIndex=Number(deserialisedStakeRegistryPdaData.next_stake_index);    
+    let serialisedNextStakeIndex=borsh.serialize(valueToU64Schema, {value:nextStakeIndex});    
+    console.log("nextStakeIndex : ",nextStakeIndex);
+    console.log("nextStakeIndex : ",serialisedNextStakeIndex);
+
+    let [nextStakeAccPda,nextStakeAccBump]=PublicKey.findProgramAddressSync([Buffer.from("stake_acc"), Buffer.from(serialisedNextStakeIndex), lstManagerPda.toBuffer()], PROGRAM_ID)
+    return {nextStakeAccPda , nextStakeAccBump};
+} 

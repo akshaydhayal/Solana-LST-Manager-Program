@@ -1,36 +1,65 @@
-import { useConnection } from '@solana/wallet-adapter-react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { AlertCircle, TrendingUp } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { lstManagerVaultPda, PROGRAM_ID } from '../lib/constants';
-import { LAMPORTS_PER_SOL, TransactionInstruction } from '@solana/web3.js';
+import { lstManagerBump, lstManagerPda, lstManagerVaultBump, lstManagerVaultPda, PROGRAM_ID, stakeRegistryRecordBump, stakeRegistryRecordPda } from '../lib/constants';
+import { LAMPORTS_PER_SOL, PublicKey, StakeProgram, SystemProgram, SYSVAR_CLOCK_PUBKEY, SYSVAR_RENT_PUBKEY, SYSVAR_STAKE_HISTORY_PUBKEY, Transaction, TransactionInstruction } from '@solana/web3.js';
 import { Buffer } from 'buffer';
 import { useRecoilValue } from 'recoil';
+import { navState } from '../state/navState';
+import { getNextStakePdaAccount } from '../lib/helpers';
 
 const AdminStake = () => {
   let {connection}=useConnection();
-  const [stakeAmount, setStakeAmount] = useState<null|number>(null);  
+  let wallet=useWallet();
+  //const [stakeAmount, setStakeAmount] = useState<null|number>(null);  
   const [vaultBalance, setVaultBalnce] = useState(0);
-  
-  let userAddress=useRecoilValue
+  let userAddress=useRecoilValue(navState);
 
   useEffect(()=>{
-    async function getVaultBal(){
+    async function getVaultBal(){ 
         let lstManagerVaultPdaBal=await connection.getBalance(lstManagerVaultPda,"confirmed") - await connection.getMinimumBalanceForRentExemption(0,"confirmed");
         setVaultBalnce(lstManagerVaultPdaBal);
     }
     getVaultBal();
-  },[connection])
+},[connection])
 
-  async function stakeVaultSolToValidator(){
+async function stakeVaultSolToValidator(){
+    if(!userAddress.user_address){return;}
+    let {nextStakeAccPda,nextStakeAccBump}=await getNextStakePdaAccount(connection);
+
+    //@c here we should have a selector that which validator to vote insteda of single validator only, maybe later
+    let validatorVoteAcc=new PublicKey("DSQ5BLBM6UcuWP2SNpmf3TJeMbqbwTFGzVqFGufyNCgk");
+    const STAKE_CONFIG_ID = new PublicKey("StakeConfig11111111111111111111111111111111");
+
     let ix=new TransactionInstruction({
         programId:PROGRAM_ID,
         keys:[
-            {pubkey:}
+            {pubkey:userAddress.user_address, isSigner:true, isWritable:true},
+            {pubkey:lstManagerPda, isSigner:false, isWritable:true},
+            {pubkey:lstManagerVaultPda, isSigner:false, isWritable:true},
+            {pubkey:nextStakeAccPda, isSigner:false, isWritable:true},
+            {pubkey:validatorVoteAcc, isSigner:false, isWritable:false},
+            {pubkey:stakeRegistryRecordPda, isSigner:false, isWritable:true},
+            
+            {pubkey:SYSVAR_RENT_PUBKEY, isSigner:false, isWritable:false},
+            {pubkey:SYSVAR_CLOCK_PUBKEY, isSigner:false, isWritable:false},
+            {pubkey:SYSVAR_STAKE_HISTORY_PUBKEY, isSigner:false, isWritable:false},
+            {pubkey:STAKE_CONFIG_ID, isSigner:false, isWritable:false},
+            {pubkey:SystemProgram.programId, isSigner:false, isWritable:false},
+            {pubkey:StakeProgram.programId, isSigner:false, isWritable:false},
         ],
         data:Buffer.concat([
-            Buffer.from([])
+            Buffer.from([2]),
+            Buffer.from([lstManagerBump]),
+            Buffer.from([lstManagerVaultBump]),
+            Buffer.from([nextStakeAccBump]),
+            Buffer.from([stakeRegistryRecordBump]),
         ])
-    })
+    });
+    let tx=new Transaction().add(ix);
+    let txStatus=await wallet.sendTransaction(tx,connection);
+    await connection.confirmTransaction(txStatus,"confirmed");
+    console.log("stake SOL txStatus : ",txStatus);
   }
 
   return (
@@ -44,7 +73,7 @@ const AdminStake = () => {
                 <div className="text-3xl font-bold mb-4">{vaultBalance/LAMPORTS_PER_SOL} SOL</div>
             </div>
 
-            <div>
+            {/* <div>
                 <label className="text-sm text-gray-400 mb-2 block">Stake Amount</label>
                 <div className="relative">
                     <input type="number" value={stakeAmount} onChange={(e) => setStakeAmount(Number(e.target.value))}
@@ -59,7 +88,7 @@ const AdminStake = () => {
                         </button>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             <div className="bg-blue-600/10 border border-blue-500/30 rounded-lg p-4">
                 <div className="flex gap-2 text-sm">
@@ -68,8 +97,9 @@ const AdminStake = () => {
                 </div>
             </div>
 
-            <button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:shadow-xl py-4 rounded-xl text-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={!stakeAmount || parseFloat(stakeAmount) <= 0}>Create Stake Account
+            <button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:shadow-xl py-4 rounded-xl text-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                onClick={stakeVaultSolToValidator}>Stake Vault SOL to Validator
+                {/* disabled={!stakeAmount || parseFloat(stakeAmount) <= 0}>Stake Vault SOL to Validator */}
             </button>
         </div>
     </div>

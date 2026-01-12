@@ -17,3 +17,14 @@ export let UserWithdrawRequestPdaSchema:borsh.Schema={
         withdraw_status:'u8'
     }
 }
+
+export let StakeRegistryRecordSchema:borsh.Schema={
+    struct:{
+        next_stake_index:'u64',
+        next_split_index:'u64'
+    }
+}
+
+export let valueToU64Schema:borsh.Schema={
+    struct:{value:'u64'}
+}
