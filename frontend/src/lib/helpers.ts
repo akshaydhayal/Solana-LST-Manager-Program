@@ -47,3 +47,15 @@ export async function fetchAllWithdrawRequest(connection:Connection){
     let [user2WithdrawPda,bump2]=PublicKey.findProgramAddressSync([Buffer.from("user_withdraw_request"), user2.toBuffer()], PROGRAM_ID);
     console.log("user2WithdrawPda : ",user2WithdrawPda.toBase58());
 }
+
+export async function checkIfUserIsAdmin(connection:Connection, user:PublicKey){
+    let lstManagerPdaData=await connection.getAccountInfo(lstManagerPda,"confirmed");
+    let deserialisedLstManagerPdaData=borsh.deserialize(lstManagerPdaSchema,lstManagerPdaData?.data);
+
+    // if(deserialisedLstManagerPdaData.admin)
+    let adminPub=new PublicKey(deserialisedLstManagerPdaData.admin);
+    let isUserAdmin=(adminPub.toBase58()==user.toBase58());
+    console.log("adminPub : ",adminPub.toBase58());
+    console.log("status : ",adminPub.toBase58()==user.toBase58());
+    return isUserAdmin;
+}

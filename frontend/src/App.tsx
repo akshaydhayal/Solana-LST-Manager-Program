@@ -7,6 +7,9 @@ import { Buffer } from "buffer";
 import { Route, Routes } from "react-router-dom";
 import UserPage from "./pages/UserPage";
 import { RecoilRoot } from "recoil";
+import AdminPage from "./pages/AdminPage";
+import AppGate from "./pages/AppGate";
+import Navbar from "./components/Navbar";
 
 function App() {
   let endpoint=clusterApiUrl("devnet")
@@ -14,11 +17,13 @@ function App() {
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={[]} autoConnect>
           <WalletModalProvider>
-            {/* <DepositSOL/> */}
             <RecoilRoot>
-              <Routes>
+              <Navbar/>
+              <AppGate/>
+              {/* <Routes>
                 <Route path="/" element={<UserPage/>}/>
-              </Routes>
+                <Route path="/admin" element={<AdminPage/>}/>
+              </Routes> */}
             </RecoilRoot>
           </WalletModalProvider>
         </WalletProvider>

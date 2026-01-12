@@ -4,11 +4,15 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 import { navState } from '../state/navState'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useEffect } from 'react'
+import { lstManagerPda, lstManagerVaultPda, lstMintPda } from '../lib/constants'
 
 const Navbar = () => {
   let wallet=useWallet();
   let [userAddress,setUserAddress]=useRecoilState(navState);
-  console.log("user address : ",userAddress.user_address);
+  console.log("user address : ",userAddress.user_address?.toBase58());
+  console.log("lst manager pda : ",lstManagerPda?.toBase58());
+  console.log("lst manager vault pda : ",lstManagerVaultPda?.toBase58());
+  console.log("lst mint pda : ",lstMintPda?.toBase58());
   
   useEffect(()=>{
     if (wallet.publicKey){

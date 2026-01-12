@@ -5,4 +5,5 @@ export const PROGRAM_ID=new PublicKey("DfknHZAbr5LiHxPXXsVrAhs2o93RUmffDzMwZQzMS
 
 export const [lstManagerPda, lstManagerBump]=PublicKey.findProgramAddressSync([Buffer.from("lst_manager")], PROGRAM_ID);
 export const [lstManagerVaultPda, lstManagerVaultBump]=PublicKey.findProgramAddressSync([Buffer.from("lst_manager_vault"), lstManagerPda.toBuffer()], PROGRAM_ID);
+export const [lstManagerWithdrawVaultPda, lstManagerWithdrawVaultBump]=PublicKey.findProgramAddressSync([Buffer.from("lst_manager_user_withdrawl_vault"), lstManagerPda.toBuffer()], PROGRAM_ID);
 export const [lstMintPda, lstMintBump]=PublicKey.findProgramAddressSync([Buffer.from("lst_mint"), lstManagerPda.toBuffer()], PROGRAM_ID);
