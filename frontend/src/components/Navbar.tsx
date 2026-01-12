@@ -8,8 +8,8 @@ import { useEffect } from 'react'
 const Navbar = () => {
   let wallet=useWallet();
   let [userAddress,setUserAddress]=useRecoilState(navState);
-  console.log("wallet : ",wallet);
-
+  console.log("user address : ",userAddress.user_address);
+  
   useEffect(()=>{
     if (wallet.publicKey){
         setUserAddress({user_address:wallet.publicKey})

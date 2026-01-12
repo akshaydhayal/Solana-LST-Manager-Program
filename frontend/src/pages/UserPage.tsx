@@ -9,7 +9,7 @@ import StakeCard from '../components/StakeCard';
 import UnstakeCard from '../components/UnstakeCard';
 import { useRecoilValue } from 'recoil';
 import { navState } from '../state/navState';
-import {  getLSTMintSupply, getProtocolTVL } from '../lib/helpers';
+import {  fetchAllWithdrawRequest, getLSTMintSupply, getProtocolTVL } from '../lib/helpers';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { useConnection } from '@solana/wallet-adapter-react';
 import * as borsh from "borsh";
@@ -26,26 +26,15 @@ const UserPage = () => {
 
   let userAddress=useRecoilValue(navState);
   async function getProtocolInfo(){
-    let protocolTvl=await getProtocolTVL();
-    console.log("protocolTVL : " ,protocolTvl);
+    let protocolTvl=await getProtocolTVL(connection);
+    // console.log("protocolTVL : " ,protocolTvl);
     if(protocolTvl){
       setProtocolTVL(protocolTvl);
     }
 
     let lstMintSupply=await getLSTMintSupply(connection);
     setLstSupply(lstMintSupply);
-    // let a=await fetchAllWithdrawRequest(connection);
-    // console.log("a : ",a);
-
-      let user1=new PublicKey("3shLPzr2Dd4d8XShBMrcUnUUoRTf1iEmDDaTXLiBLAC3");
-      let [user1WithdrawPda,bump]=PublicKey.findProgramAddressSync([Buffer.from("user_withdraw_request"), user1.toBuffer()], PROGRAM_ID);
-      let user1WithdrawPdaData=await connection.getAccountInfo(user1WithdrawPda,"confirmed");
-      let deserialisedUser1WithdrawPdaData=borsh.deserialize(UserWithdrawRequestPdaSchema,user1WithdrawPdaData.data);
-      console.log("deserialisedUser1WithdrawPdaData : ",deserialisedUser1WithdrawPdaData)
-      
-      let user2=new PublicKey("BWkUkMnQB449fXF8JVnHTejsbcDrL2i11ut876q1t6w");
-      let [user2WithdrawPda,bump2]=PublicKey.findProgramAddressSync([Buffer.from("user_withdraw_request"), user2.toBuffer()], PROGRAM_ID);
-      console.log("user2WithdrawPda : ",user2WithdrawPda.toBase58());
+    // await fetchAllWithdrawRequest(connection);
     }
   getProtocolInfo();
 
@@ -87,9 +76,9 @@ const UserPage = () => {
           
           <StatCard label="Exchange Rate" value={stats.exchangeRate} subtext="LST per SOL"
             icon={ArrowDownUp} gradient="from-green-600/20 to-green-800/20 border border-green-600/20"/>
-          <StatCard label="Your Staked SOL" value={isConnected ? `${stats.yourStake} SOL` : '—'}
+          {/* <StatCard label="Your Staked SOL" value={isConnected ? `${stats.yourStake} SOL` : '—'}
             subtext={isConnected ? `${stats.yourLST} LST` : 'Connect wallet'} icon={Wallet}
-            gradient="from-pink-600/20 to-pink-800/20 border border-pink-600/20"/>
+            gradient="from-pink-600/20 to-pink-800/20 border border-pink-600/20"/> */}
         </div>
 
         <div className="max-w-6xl mx-auto">

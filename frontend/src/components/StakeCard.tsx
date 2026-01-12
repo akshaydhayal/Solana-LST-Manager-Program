@@ -38,11 +38,11 @@ const StakeCard = () => {
         return;
     }
     let serialisedDepositAmount=borsh.serialize(serialisedAmountSchema,{amount: stakeAmount*LAMPORTS_PER_SOL});
-    console.log("serialisedDepositAmount :  ",serialisedDepositAmount);
+    // console.log("serialisedDepositAmount :  ",serialisedDepositAmount);
     let userLstAta=spl.getAssociatedTokenAddressSync(lstMintPda, userAddress.user_address, false, spl.TOKEN_PROGRAM_ID);
     console.log("user lst ata : ",userLstAta.toBase58());
-    //@c need to create user lst ata here if not exist
-    
+
+    //need to create user lst ata here if not exist
     let userLstAtaDetails=await connection.getAccountInfo(userLstAta,"confirmed");
     console.log("userLstAtaDetails : " ,userLstAtaDetails);
     let tx=new Transaction();
@@ -70,7 +70,6 @@ const StakeCard = () => {
             Buffer.from([lstMintBump]),
         ])
     });
-    // let tx=new Transaction().add(ix);
     tx.add(ix);
     // tx.recentBlockhash=(await connection.getLatestBlockhash()).blockhash;
     let txStatus=await wallet.sendTransaction(tx,connection);

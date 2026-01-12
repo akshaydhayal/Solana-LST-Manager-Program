@@ -8,7 +8,6 @@ import { navState } from "../state/navState";
 import * as spl from "@solana/spl-token";
 import { Buffer } from "buffer";
 import * as borsh from "borsh";
-import { getProtocolTVL } from "../lib/helpers";
 
 let serialisedU64Schema:borsh.Schema={
     struct:{value:'u64'}
@@ -21,7 +20,6 @@ const UnstakeCard = () => {
   let wallet=useWallet();
 
   let userAddress=useRecoilValue(navState);
-  console.log("user address : ",userAddress);
 
     // Mock data
   const stats = {
@@ -41,7 +39,6 @@ const UnstakeCard = () => {
     setUserLstBalance(userLstBal);
   }
   getUserTokenBalance();
-  getProtocolTVL();
 
   async function unstakeLST(){
     if(!userAddress.user_address || !unstakeAmount || !wallet){
