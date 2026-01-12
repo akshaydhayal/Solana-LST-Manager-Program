@@ -17,7 +17,7 @@ export default function DepositSOL(){
     let [depositAmount,setDepositAmount]=useState(0);
     let wallet=useWallet();
     
-    async function depositSOLToLST(){
+    async function depositSOLToLST(){ 
         if(!wallet.publicKey){
             return;
         }
