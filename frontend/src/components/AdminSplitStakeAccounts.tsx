@@ -4,17 +4,23 @@ import React, { useEffect, useState } from 'react'
 import { stakeAccountsSchema, StakeRegistryRecordSchema, valueToU64Schema } from '../lib/borshSchema';
 import * as borsh from "borsh";
 import { lstManagerPda, PROGRAM_ID, stakeRegistryRecordPda } from '../lib/constants';
-import { PublicKey } from '@solana/web3.js';
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { Buffer } from 'buffer';
 import { useRecoilState } from 'recoil';
 import { splitAccountsState } from '../state/splitAccountsState';
 
-export type splitAccountsType={index:number,pubkey:string, stakeAmount:number, activatedEpoch:number}[];
+export type splitAccountsType={
+  index:number,
+  pubkey:string,
+  stakeAmount:number,
+  deactivationEpoch:number,
+  withdrawReady:boolean
+}[];
 
 const AdminSplitStakeAccounts = () => {
   let {connection}=useConnection();
-  // const [activeSplitAccounts,setActiveSplitAccounts]=useState<splitAccountsType[]>([]);
   const [activeSplitAccounts,setActiveSplitAccounts]=useRecoilState(splitAccountsState);
+  const [currentEpoch,setCurrentEpoch]=useState(0);
   
   useEffect(()=>{
     async function getAllActiveSplitStakeAccounts(){
@@ -22,12 +28,13 @@ const AdminSplitStakeAccounts = () => {
       let deserialisedStakeRegistryPdaData=borsh.deserialize(StakeRegistryRecordSchema, stakeRegistryPdaData?.data);
       let totalSplitAccCount=Number(deserialisedStakeRegistryPdaData.next_split_index)-1; 
   
+      let epoch=(await connection.getEpochInfo()).epoch;
+      setCurrentEpoch(epoch);
+
       let splitAccounts:splitAccountsType=[];
-      // let splitAccount=[];
       for(let i=1; i<=totalSplitAccCount; i++){
           let serialisedSplitIndex=borsh.serialize(valueToU64Schema, {value:i});    
           let [splitAccPda,stakeAccBump]=PublicKey.findProgramAddressSync([Buffer.from("split_stake_acc"), Buffer.from(serialisedSplitIndex), lstManagerPda.toBuffer()], PROGRAM_ID)
-          // splitAccount.push(splitAccPda.toBase58());
 
           let splitAccPdaData=await connection.getAccountInfo(splitAccPda);
           console.log("splitAccPda : ",splitAccPda.toBase58());
@@ -40,7 +47,8 @@ const AdminSplitStakeAccounts = () => {
                 index:i,
                 pubkey:splitAccPda.toBase58(),
                 stakeAmount:Number(deserialisedSplitAccData.stake_delegation_stake_amount),
-                activatedEpoch:Number(deserialisedSplitAccData.stake_delegation_activation_epoch)
+                deactivationEpoch:Number(deserialisedSplitAccData.stake_delegation_deactivation_epoch),
+                withdrawReady:(epoch >= Number(deserialisedSplitAccData.stake_delegation_deactivation_epoch))
               });
             }
           }
@@ -51,7 +59,7 @@ const AdminSplitStakeAccounts = () => {
     getAllActiveSplitStakeAccounts();
   },[connection])
 
-      const splitStakeAccounts = [
+    const splitStakeAccounts = [
     { index: 0, address: '2vB5...xT9u', amount: 5000, status: 'deactivating', unlockEpoch: 1006, currentEpoch: 1005 },
     { index: 1, address: '8nC7...yW3v', amount: 7500, status: 'inactive', unlockEpoch: 1005, currentEpoch: 1005 },
     { index: 2, address: '5pD9...zX6w', amount: 3000, status: 'deactivating', unlockEpoch: 1007, currentEpoch: 1005 },
@@ -62,26 +70,29 @@ const AdminSplitStakeAccounts = () => {
         <Database size={20} className="text-purple-400" />Split Stake Accounts</h3>
         <div className="space-y-3">
         {/* {splitStakeAccounts.map((acc) => ( */}
-        {activeSplitAccounts.map((acc) => (
+        {activeSplitAccounts.length>0 && activeSplitAccounts.map((acc) => (
             <div key={acc.index} className="bg-gray-900/50 rounded-lg p-3 border border-gray-700/50">
-            <div className="flex justify-between items-start mb-2">
+            <div className="flex justify-between items-start mb-2"> 
                 {/* <div className="font-mono text-xs text-gray-400">{acc.address}</div> */}
-                <div className="font-mono text-xs text-gray-400">{acc.pubkey}</div>
-                {acc.status === 'inactive' ? (
+                <div className="font-mono text-xs text-gray-400 truncate">{acc.pubkey}</div>
+                {/* {acc.status === 'inactive' ? ( */}
+                {acc.withdrawReady ===true ? (
                 <span className="px-2 py-0.5 bg-green-600/20 text-green-400 text-xs rounded-full border border-green-600/30 flex items-center gap-1">
                     <CheckCircle size={10} /> Ready
                 </span>
                 ) : (
                 <span className="px-2 py-0.5 bg-orange-600/20 text-orange-400 text-xs rounded-full border border-orange-600/30">
-                    {acc.activatedEpoch - acc.activatedEpoch} epochs
+                    {1} epochs
                     {/* {acc.unlockEpoch - acc.currentEpoch} epochs */}
                 </span>
                 )}
             </div>
             {/* <div className="text-lg font-semibold">{acc.amount.toLocaleString()} SOL</div> */}
-            <div className="text-lg font-semibold">{acc.stakeAmount} SOL</div>
-            <div className="text-xs text-gray-400 mt-1">Unlock: Epoch {acc.activatedEpoch}</div>
+            <div className="text-lg font-semibold">{acc.stakeAmount/LAMPORTS_PER_SOL} SOL</div>
+            <div className="text-xs text-gray-400 mt-1">Deactivation Epoch : {acc.deactivationEpoch}</div>
+            <div className="text-xs text-gray-400 mt-1">Current Epoch : {currentEpoch}</div>
             {/* <div className="text-xs text-gray-400 mt-1">Unlock: Epoch {acc.unlockEpoch}</div> */}
+            <div className="text-xs text-gray-400 mt-1">Split Index: {acc.index}</div>
             </div>
         ))}
         </div>

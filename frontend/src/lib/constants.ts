@@ -9,5 +9,3 @@ export const [lstManagerWithdrawVaultPda, lstManagerWithdrawVaultBump]=PublicKey
 export const [lstMintPda, lstMintBump]=PublicKey.findProgramAddressSync([Buffer.from("lst_mint"), lstManagerPda.toBuffer()], PROGRAM_ID);
 
 export const [stakeRegistryRecordPda, stakeRegistryRecordBump]=PublicKey.findProgramAddressSync([Buffer.from("stake_registry_record"), lstManagerPda.toBuffer()], PROGRAM_ID);
-
-

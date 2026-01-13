@@ -19,15 +19,15 @@ const AdminPage = () => {
                 <div className="lg:col-span-2 space-y-6">
                     <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/50 p-2 flex gap-2">
                         <button onClick={() => setActiveTab('stake')}
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'stake' ? 'bg-gradient-to-r from-green-600 to-emerald-600 shadow-lg' : 'hover:bg-gray-700/50'}`}>
+                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'stake' ? 'bg-gradient-to-r from-green-600 to-emerald-600 shadow-lg' : 'hover:bg-gray-700/50'} cursor-pointer`}>
                             <TrendingUp size={18} />Stake Vault SOL
                         </button>
                         <button onClick={() => setActiveTab('unstake')} 
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'unstake'? 'bg-gradient-to-r from-orange-600 to-red-600 shadow-lg': 'hover:bg-gray-700/50'}`}>
+                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'unstake'? 'bg-gradient-to-r from-orange-600 to-red-600 shadow-lg': 'hover:bg-gray-700/50'} cursor-pointer`}>
                             <TrendingDown size={18} />Unstake SOL
                         </button>
                         <button onClick={() => setActiveTab('withdraw')}
-                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${ activeTab === 'withdraw'? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg': 'hover:bg-gray-700/50' }`}>
+                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${ activeTab === 'withdraw'? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg': 'hover:bg-gray-700/50' } cursor-pointer`}>
                             <Database size={18} />Withdraw Split
                         </button>
                     </div>
