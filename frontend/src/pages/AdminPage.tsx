@@ -6,14 +6,16 @@ import AdminStakeAccounts from '../components/AdminStakeAccounts';
 import AdminWithdraw from '../components/AdminWithdraw';
 import AdminUnstake from '../components/AdminUnstake';
 import AdminStake from '../components/AdminStake';
+import StatsGrid from '../components/StatsGrid';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState('stake');
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 text-white p-0">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl mx-auto px-6 py-8">
             {/* <Navbar/> */}
-            <AdminStats/>
+            {/* <AdminStats/> */}
+            <StatsGrid/>
             {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6"> */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-6xl mx-auto px-0 py-0">
                 <div className="lg:col-span-2 space-y-6">
