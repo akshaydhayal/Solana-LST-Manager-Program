@@ -159,7 +159,8 @@ pub fn initialise_lst(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_b
         admin:*user.key,
         lst_mint:*lst_mint_pda.key,
         total_sol_staked:0,
-        total_lst_supply:0
+        total_lst_supply:0,
+        // total_pending_withdrawl_sol:0
     };
     stake_registry_record_data.serialize(&mut *stake_registry_record_pda.data.borrow_mut())?;
     lst_manager_pda_data.serialize(&mut *lst_manager_pda.data.borrow_mut())?;

@@ -17,7 +17,7 @@ use crate::state::{
 };
 use crate::maths::exchange_rate::{lst_to_sol_rate,calculate_lst_to_sol_amounts};
 
-pub fn unstake_sol(program_id:&Pubkey, accounts:&[AccountInfo], stake_acc_index:u64, lst_manager_bump:u8, lst_manager_vault_bump:u8, epoch_withdraw_bump:u8, stake_acc_bump:u8, split_stake_acc_bump:u8, stake_registry_record_bump:u8)->ProgramResult{
+pub fn unstake_sol_from_validator(program_id:&Pubkey, accounts:&[AccountInfo], stake_acc_index:u64, lst_manager_bump:u8, lst_manager_vault_bump:u8, epoch_withdraw_bump:u8, stake_acc_bump:u8, split_stake_acc_bump:u8, stake_registry_record_bump:u8)->ProgramResult{
     let mut accounts_iter=accounts.iter();
     let user=next_account_info(&mut accounts_iter)?;
     let lst_manager_pda=next_account_info(&mut accounts_iter)?;

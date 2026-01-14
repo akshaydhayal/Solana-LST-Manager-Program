@@ -7,7 +7,7 @@ use borsh::{BorshDeserialize, BorshSerialize};
 use crate::{error::LSTErrors, maths::exchange_rate::{calculate_sol_to_lst_amounts, sol_to_lst_rate}, state::lst_manager::LSTManager};
 
 // pub fn deposit_sol(program_id:&Pubkey, accounts:&[AccountInfo],deposit_amount:u64, lst_manager_bump:u8, lst_manager_vault_bump:u8, lst_mint_bump:u8, user_position_bump:u8)->ProgramResult{
-pub fn deposit_sol(program_id:&Pubkey, accounts:&[AccountInfo],deposit_amount:u64, lst_manager_bump:u8, lst_manager_vault_bump:u8, lst_mint_bump:u8)->ProgramResult{
+pub fn deposit_sol_to_vault(program_id:&Pubkey, accounts:&[AccountInfo],deposit_amount:u64, lst_manager_bump:u8, lst_manager_vault_bump:u8, lst_mint_bump:u8)->ProgramResult{
     let mut accounts_iter=accounts.iter();
     let user=next_account_info(&mut accounts_iter)?;
     let lst_manager_pda=next_account_info(&mut accounts_iter)?;

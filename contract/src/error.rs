@@ -21,6 +21,12 @@ pub enum LSTErrors{
     #[error("given user withdraw request pda seeds do not match with correct user withdraw request seeds")]
     UserWithdrawRequestPdaMismatch,
 
+    #[error("given user withdraw request has already been claimed by user")]
+    UserWithdrawRequestAlreadyClaimed,
+
+    #[error("user is claiming SOL before the requested epoch ends")]
+    UserClaimingBeforeRequestedEpochEnds,
+
     #[error("given epoch withdraw pda seeds do not match with correct epoch withdraw seeds")]
     EpochWithdrawPdaMismatch,
     

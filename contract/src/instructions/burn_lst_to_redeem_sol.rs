@@ -13,7 +13,7 @@ use crate::state::{
 };
 use crate::maths::exchange_rate::{lst_to_sol_rate,calculate_lst_to_sol_amounts};
 
-pub fn burn_lst(program_id:&Pubkey, accounts:&[AccountInfo], burn_lst_amount:u64, lst_manager_bump:u8, lst_manager_vault_bump:u8, lst_mint_bump:u8, user_withdraw_request_bump:u8, epoch_withdraw_bump:u8)->ProgramResult{
+pub fn burn_lst_to_redeem_sol(program_id:&Pubkey, accounts:&[AccountInfo], burn_lst_amount:u64, lst_manager_bump:u8, lst_manager_vault_bump:u8, lst_mint_bump:u8, user_withdraw_request_bump:u8, epoch_withdraw_bump:u8)->ProgramResult{
     let mut accounts_iter=accounts.iter();
     let user=next_account_info(&mut accounts_iter)?;
     let lst_manager_pda=next_account_info(&mut accounts_iter)?;

@@ -11,7 +11,7 @@ use borsh::{BorshDeserialize, BorshSerialize};
 
 use crate::{error::LSTErrors, state::{lst_manager::LSTManager, stake_registry_record::StakeRegistryRecord}};
 
-pub fn stake_vault_sol(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_bump:u8, lst_manager_vault_bump:u8, stake_acc_bump:u8, stake_registry_record_bump:u8)->ProgramResult{
+pub fn stake_vault_sol_to_validator(program_id:&Pubkey, accounts:&[AccountInfo], lst_manager_bump:u8, lst_manager_vault_bump:u8, stake_acc_bump:u8, stake_registry_record_bump:u8)->ProgramResult{
     let mut accounts_iter=accounts.iter();
     let user=next_account_info(&mut accounts_iter)?;
     let lst_manager_pda=next_account_info(&mut accounts_iter)?;

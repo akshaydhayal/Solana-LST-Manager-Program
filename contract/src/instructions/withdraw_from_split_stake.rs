@@ -52,7 +52,7 @@ pub fn withdraw_from_split_stake(program_id:&Pubkey, accounts:&[AccountInfo], sp
     }
     
     //steps:
-    //this ix is for admin to call, admin check
+    //this ix is for admin to call, admin check 
     // withdraw from split stake accou to user withdrawl vault, either it succeds or fails
     //now question, which split stake account to call: like split 1, split 2 , split 3 
     // 3 split stake account may be avaible, so we cant just withdraw from last split index from
