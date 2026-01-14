@@ -1,6 +1,6 @@
 import { useConnection } from '@solana/wallet-adapter-react';
 import { CheckCircle, Database } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { stakeAccountsSchema, StakeRegistryRecordSchema, valueToU64Schema } from '../lib/borshSchema';
 import * as borsh from "borsh";
 import { lstManagerPda, PROGRAM_ID, stakeRegistryRecordPda } from '../lib/constants';
@@ -25,16 +25,18 @@ const AdminSplitStakeAccounts = () => {
   useEffect(()=>{
     async function getAllActiveSplitStakeAccounts(){
       let stakeRegistryPdaData=await connection.getAccountInfo(stakeRegistryRecordPda);
+      if(!stakeRegistryPdaData){return;}
       let deserialisedStakeRegistryPdaData=borsh.deserialize(StakeRegistryRecordSchema, stakeRegistryPdaData?.data);
-      let totalSplitAccCount=Number(deserialisedStakeRegistryPdaData.next_split_index)-1; 
-  
+      //@ts-ignore
+      let totalSplitAccCount=Number(deserialisedStakeRegistryPdaData?.next_split_index)-1; 
+      
       let epoch=(await connection.getEpochInfo()).epoch;
       setCurrentEpoch(epoch);
 
       let splitAccounts:splitAccountsType=[];
       for(let i=1; i<=totalSplitAccCount; i++){
           let serialisedSplitIndex=borsh.serialize(valueToU64Schema, {value:i});    
-          let [splitAccPda,stakeAccBump]=PublicKey.findProgramAddressSync([Buffer.from("split_stake_acc"), Buffer.from(serialisedSplitIndex), lstManagerPda.toBuffer()], PROGRAM_ID)
+          let [splitAccPda, _]=PublicKey.findProgramAddressSync([Buffer.from("split_stake_acc"), Buffer.from(serialisedSplitIndex), lstManagerPda.toBuffer()], PROGRAM_ID)
 
           let splitAccPdaData=await connection.getAccountInfo(splitAccPda);
           console.log("splitAccPda : ",splitAccPda.toBase58());
@@ -42,12 +44,16 @@ const AdminSplitStakeAccounts = () => {
           if(splitAccPdaData){
             let deserialisedSplitAccData=borsh.deserialize(stakeAccountsSchema, splitAccPdaData?.data);
             console.log("deserialisedSplitAccData : ",deserialisedSplitAccData);
-            if(deserialisedSplitAccData.stake_discriminator==2){
+            //@ts-ignore
+            if(deserialisedSplitAccData?.stake_discriminator==2){
               splitAccounts.push({
                 index:i,
                 pubkey:splitAccPda.toBase58(),
+                //@ts-ignore
                 stakeAmount:Number(deserialisedSplitAccData.stake_delegation_stake_amount),
+                //@ts-ignore
                 deactivationEpoch:Number(deserialisedSplitAccData.stake_delegation_deactivation_epoch),
+                //@ts-ignore
                 withdrawReady:(epoch >= Number(deserialisedSplitAccData.stake_delegation_deactivation_epoch))
               });
             }
@@ -59,11 +65,11 @@ const AdminSplitStakeAccounts = () => {
     getAllActiveSplitStakeAccounts();
   },[connection])
 
-    const splitStakeAccounts = [
-    { index: 0, address: '2vB5...xT9u', amount: 5000, status: 'deactivating', unlockEpoch: 1006, currentEpoch: 1005 },
-    { index: 1, address: '8nC7...yW3v', amount: 7500, status: 'inactive', unlockEpoch: 1005, currentEpoch: 1005 },
-    { index: 2, address: '5pD9...zX6w', amount: 3000, status: 'deactivating', unlockEpoch: 1007, currentEpoch: 1005 },
-  ];
+  //   const splitStakeAccounts = [
+  //   { index: 0, address: '2vB5...xT9u', amount: 5000, status: 'deactivating', unlockEpoch: 1006, currentEpoch: 1005 },
+  //   { index: 1, address: '8nC7...yW3v', amount: 7500, status: 'inactive', unlockEpoch: 1005, currentEpoch: 1005 },
+  //   { index: 2, address: '5pD9...zX6w', amount: 3000, status: 'deactivating', unlockEpoch: 1007, currentEpoch: 1005 },
+  // ];
   return (
     <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-6">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">

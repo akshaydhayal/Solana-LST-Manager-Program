@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useRecoilValue } from 'recoil';
 import { splitAccountsState } from '../state/splitAccountsState';
 import { LAMPORTS_PER_SOL, PublicKey, StakeProgram, SYSVAR_CLOCK_PUBKEY, SYSVAR_STAKE_HISTORY_PUBKEY, Transaction, TransactionInstruction } from '@solana/web3.js';
-import { lstManagerBump, lstManagerPda, lstManagerVaultPda, lstManagerWithdrawVaultBump, lstManagerWithdrawVaultPda, PROGRAM_ID } from '../lib/constants';
+import { lstManagerBump, lstManagerPda, lstManagerWithdrawVaultBump, lstManagerWithdrawVaultPda, PROGRAM_ID } from '../lib/constants';
 import { Buffer } from 'buffer';
 import { navState } from '../state/navState';
 import * as borsh from "borsh";
@@ -18,11 +18,11 @@ const AdminWithdraw = () => {
   let userAddress=useRecoilValue(navState);
 
   console.log("lstManagerWithdrawVaultBump : ",lstManagerWithdrawVaultPda.toBase58());
-  const splitStakeAccounts = [
-    { index: 0, address: '2vB5...xT9u', amount: 5000, status: 'deactivating', unlockEpoch: 1006, currentEpoch: 1005 },
-    { index: 1, address: '8nC7...yW3v', amount: 7500, status: 'inactive', unlockEpoch: 1005, currentEpoch: 1005 },
-    { index: 2, address: '5pD9...zX6w', amount: 3000, status: 'deactivating', unlockEpoch: 1007, currentEpoch: 1005 },
-  ];
+//   const splitStakeAccounts = [
+//     { index: 0, address: '2vB5...xT9u', amount: 5000, status: 'deactivating', unlockEpoch: 1006, currentEpoch: 1005 },
+//     { index: 1, address: '8nC7...yW3v', amount: 7500, status: 'inactive', unlockEpoch: 1005, currentEpoch: 1005 },
+//     { index: 2, address: '5pD9...zX6w', amount: 3000, status: 'deactivating', unlockEpoch: 1007, currentEpoch: 1005 },
+//   ];
 
   async function withdrawToUserWithdrawVault(){
     if(!userAddress.user_address){return;}

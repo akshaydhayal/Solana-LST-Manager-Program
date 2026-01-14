@@ -1,5 +1,5 @@
 import { useConnection } from '@solana/wallet-adapter-react'
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { useRecoilValue } from 'recoil';
 import { navState } from '../state/navState';
 import { checkIfUserIsAdmin } from '../lib/helpers';
@@ -14,7 +14,9 @@ const AppGate = () => {
       async function checkIsUserAdmin(){
           if(userAddress.user_address){
               let userAdminStatus=await checkIfUserIsAdmin(connection, userAddress.user_address);
-              setIsUserAdmin(userAdminStatus);  
+              if(userAdminStatus!=null){
+                setIsUserAdmin(userAdminStatus);  
+              }
           }
       }
       checkIsUserAdmin();

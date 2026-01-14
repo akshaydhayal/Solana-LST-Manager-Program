@@ -4,36 +4,41 @@ import * as borsh from "borsh";
 import { lstManagerPda, PROGRAM_ID, stakeRegistryRecordPda } from '../lib/constants';
 import { stakeAccountsSchema, StakeRegistryRecordSchema, valueToU64Schema } from '../lib/borshSchema';
 import { Buffer } from 'buffer';
-import { LAMPORTS_PER_SOL, PublicKey, StakeProgram } from '@solana/web3.js';
-import { useEffect, useState } from 'react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { useEffect } from 'react';
+import { useRecoilState} from 'recoil';
 import { stakeAccountsState } from '../state/stakeAccountsState';
 
 export type stakeAccountsType={index:number,pubkey:string, stakeAmount:number, activatedEpoch:number}[];
 
 const AdminStakeAccounts = () => {
-  let {connection}=useConnection();
-  // const [activeStakeAccounts,setActiveStateAccounts]=useState<stakeAccountsType>([]);
-  
+  let {connection}=useConnection();  
   let [activeStakeAccounts,setActiveStateAccounts]=useRecoilState(stakeAccountsState);
+
   useEffect(()=>{
     async function getAllActiveStakeAccounts(){
       let stakeRegistryPdaData=await connection.getAccountInfo(stakeRegistryRecordPda);
+      if(!stakeRegistryPdaData){return;}
       let deserialisedStakeRegistryPdaData=borsh.deserialize(StakeRegistryRecordSchema, stakeRegistryPdaData?.data);
-      let totalStakeAccCount=Number(deserialisedStakeRegistryPdaData.next_stake_index)-1; 
+      //@ts-ignore
+      let totalStakeAccCount=Number(deserialisedStakeRegistryPdaData?.next_stake_index)-1; 
   
       let stakeAccount:stakeAccountsType=[];
       for(let i=1; i<=totalStakeAccCount; i++){
           let serialisedStakeIndex=borsh.serialize(valueToU64Schema, {value:i});    
-          let [stakeAccPda,stakeAccBump]=PublicKey.findProgramAddressSync([Buffer.from("stake_acc"), Buffer.from(serialisedStakeIndex), lstManagerPda.toBuffer()], PROGRAM_ID)
+          let [stakeAccPda,_]=PublicKey.findProgramAddressSync([Buffer.from("stake_acc"), Buffer.from(serialisedStakeIndex), lstManagerPda.toBuffer()], PROGRAM_ID)
           
           let stakeAccPdaData=await connection.getAccountInfo(stakeAccPda);
+          if(!stakeAccPdaData){return;}
           let deserialisedStakeAccData=borsh.deserialize(stakeAccountsSchema, stakeAccPdaData?.data);
-          if(deserialisedStakeAccData.stake_discriminator==2){
+          //@ts-ignore
+          if(deserialisedStakeAccData?.stake_discriminator==2){
             stakeAccount.push({
               index:i,
               pubkey:stakeAccPda.toBase58(),
+              //@ts-ignore
               stakeAmount:Number(deserialisedStakeAccData.stake_delegation_stake_amount),
+              //@ts-ignore
               activatedEpoch:Number(deserialisedStakeAccData.stake_delegation_activation_epoch)
             });
           }
@@ -63,5 +68,4 @@ const AdminStakeAccounts = () => {
     </div>
   )
 }
-
 export default AdminStakeAccounts

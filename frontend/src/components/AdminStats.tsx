@@ -1,5 +1,4 @@
 import { CheckCircle, Clock, TrendingUp, Wallet } from 'lucide-react'
-import React from 'react'
 
 const AdminStats = () => {
     // Mock data

@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { ArrowDownUp, TrendingUp } from 'lucide-react';
+import { ArrowDownUp, TrendingUp, type LucideProps } from 'lucide-react';
 import InfoCard from '../components/InfoCard';
 import PendingWithdrawlsCard from '../components/PendingWithdrawlsCard';
-import Footer from '../components/Footer';
 import StakeCard from '../components/StakeCard';
 import UnstakeCard from '../components/UnstakeCard';
 import StatsGrid from '../components/StatsGrid';
@@ -10,12 +9,10 @@ import StatsGrid from '../components/StatsGrid';
 const UserPage = () => {
   const [activeTab, setActiveTab] = useState('stake');
 
-  const TabButton = ({ id, label, icon: Icon }) => (
+  const TabButton = ({ id, label, icon: Icon }:{id:string, label:string, icon:React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>}) => (
     <button onClick={() => setActiveTab(id)}
       className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all cursor-pointer ${
-        activeTab === id
-          ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
-          : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-white'
+        activeTab === id ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-white'
       }`}>
       <Icon size={18} />
       {label}
@@ -48,7 +45,7 @@ const UserPage = () => {
                 <InfoCard/>
             </div>
         </div>
-        <Footer/>
+        {/* <Footer/> */}
       </div>
 
     </div>

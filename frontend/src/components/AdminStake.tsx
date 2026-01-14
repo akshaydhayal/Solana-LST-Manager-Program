@@ -25,7 +25,9 @@ const AdminStake = () => {
 
 async function stakeVaultSolToValidator(){
     if(!userAddress.user_address){return;}
-    let {nextStakeAccPda,nextStakeAccBump}=await getNextStakePdaAccount(connection);
+    // let {nextStakeAccPda,nextStakeAccBump}=await getNextStakePdaAccount(connection);
+    let nextStakeAcc=await getNextStakePdaAccount(connection);
+    if(!nextStakeAcc){return;}
 
     //@c here we should have a selector that which validator to vote insteda of single validator only, maybe later
     let validatorVoteAcc=new PublicKey("DSQ5BLBM6UcuWP2SNpmf3TJeMbqbwTFGzVqFGufyNCgk");
@@ -37,7 +39,8 @@ async function stakeVaultSolToValidator(){
             {pubkey:userAddress.user_address, isSigner:true, isWritable:true},
             {pubkey:lstManagerPda, isSigner:false, isWritable:true},
             {pubkey:lstManagerVaultPda, isSigner:false, isWritable:true},
-            {pubkey:nextStakeAccPda, isSigner:false, isWritable:true},
+            // {pubkey:nextStakeAccPda, isSigner:fa lse, isWritable:true},
+            {pubkey:nextStakeAcc?.nextStakeAccPda, isSigner:false, isWritable:true},
             {pubkey:validatorVoteAcc, isSigner:false, isWritable:false},
             {pubkey:stakeRegistryRecordPda, isSigner:false, isWritable:true},
             
@@ -52,7 +55,8 @@ async function stakeVaultSolToValidator(){
             Buffer.from([2]),
             Buffer.from([lstManagerBump]),
             Buffer.from([lstManagerVaultBump]),
-            Buffer.from([nextStakeAccBump]),
+            // Buffer.from([nextStakeAccBump]),
+            Buffer.from([nextStakeAcc.nextStakeAccBump]),
             Buffer.from([stakeRegistryRecordBump]),
         ])
     });
@@ -105,5 +109,4 @@ async function stakeVaultSolToValidator(){
     </div>
   )
 }
-
 export default AdminStake

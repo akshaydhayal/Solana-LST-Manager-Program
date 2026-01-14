@@ -24,7 +24,7 @@ const AdminUnstake = () => {
     async function checkIfEpochWithdrawExists(){
         let epoch=(await connection.getEpochInfo()).epoch;
         let serialisedEpoch=borsh.serialize(valueToU64Schema, {value:epoch});
-        let [epochWithdrawPda,epochWithdrawBump]=PublicKey.findProgramAddressSync([Buffer.from("epoch_withdraw"), Buffer.from(serialisedEpoch)], PROGRAM_ID);
+        let [epochWithdrawPda,_]=PublicKey.findProgramAddressSync([Buffer.from("epoch_withdraw"), Buffer.from(serialisedEpoch)], PROGRAM_ID);
         let epochWithdrawPdaData=await connection.getAccountInfo(epochWithdrawPda,"confirmed");
         if(epochWithdrawPdaData){
             setEpochWithdrawExists(true);
@@ -114,12 +114,14 @@ const AdminUnstake = () => {
                         <div>
                             <div className="text-gray-400">Stake Amount</div>
                             {/* <div className="text-lg font-semibold">{stakeAccounts0[parseInt(selectedStakeAccount)].amount.toLocaleString()} SOL</div> */}
-                            <div className="text-lg font-semibold">{(stakeAccounts[selectedStakeAccount-1].stakeAmount)/LAMPORTS_PER_SOL} SOL</div>
+                            {/* <div className="text-lg font-semibold">{(stakeAccounts[selectedStakeAccount-1].stakeAmount)/LAMPORTS_PER_SOL} SOL</div> */}
+                            <div className="text-lg font-semibold">{(stakeAccounts[Number(selectedStakeAccount)-1].stakeAmount)/LAMPORTS_PER_SOL} SOL</div>
                         </div>
                         <div>
                             <div className="text-gray-400">Current Epoch</div>
                             {/* <div className="text-lg font-semibold">{stakeAccounts0[parseInt(selectedStakeAccount)].epoch}</div> */}
-                            <div className="text-lg font-semibold">{stakeAccounts[selectedStakeAccount-1].activatedEpoch}</div>
+                            {/* <div className="text-lg font-semibold">{stakeAccounts[selectedStakeAccount-1].activatedEpoch}</div> */}
+                            <div className="text-lg font-semibold">{stakeAccounts[Number(selectedStakeAccount)-1].activatedEpoch}</div>
                         </div>
                     </div>
                 </div>
