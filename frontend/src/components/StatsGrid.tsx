@@ -36,7 +36,7 @@ const StatsGrid = () => {
   getProtocolInfo();
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-8">  
-        <StatCard label="Total Value Locked (TVL)" value={`${protocolTVL?protocolTVL/LAMPORTS_PER_SOL:''} SOL`}
+        <StatCard label="Total Value Locked (TVL)" value={`${protocolTVL?protocolTVL/LAMPORTS_PER_SOL:'0'} SOL`}
             icon={Coins} gradient="from-purple-600/20 to-purple-800/20 border border-purple-600/20"/>
         <StatCard label="Total dSOL LST Supply" value={`${lstSupply} dSOL`}
             icon={Coins} gradient="from-purple-600/20 to-purple-800/20 border border-purple-600/20"/>

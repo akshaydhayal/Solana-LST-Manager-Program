@@ -5,7 +5,8 @@ export let lstManagerPdaSchema:borsh.Schema={
         admin:{array:{type:'u8',len:32}},
         lst_mint:{array:{type:'u8',len:32}},
         total_sol_staked:'u64',  
-        total_lst_supply:'u64'
+        total_lst_supply:'u64',
+        total_pending_withdrawl_sol:'u64'
     }
 }
 

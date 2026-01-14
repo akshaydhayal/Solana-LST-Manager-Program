@@ -47,7 +47,7 @@ pub fn deposit_sol_to_vault(program_id:&Pubkey, accounts:&[AccountInfo],deposit_
     let rent=Rent::get()?;
     let mut lst_manager_data=LSTManager::try_from_slice(&lst_manager_pda.data.borrow())?;
     // let total_sol_in_protocol=lst_manager_data.total_sol_staked + lst_manager_vault_pda.lamports();
-    let total_sol_in_protocol=lst_manager_data.total_sol_staked + (lst_manager_vault_pda.lamports() - rent.minimum_balance(0));
+    let total_sol_in_protocol=(lst_manager_data.total_sol_staked - lst_manager_data.total_pending_withdrawl_sol) + (lst_manager_vault_pda.lamports() - rent.minimum_balance(0));
     let total_lst_in_protocol=Mint::unpack(&lst_mint_pda.data.borrow())?.supply;
 
     //exchange rates

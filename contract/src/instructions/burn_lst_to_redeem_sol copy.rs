@@ -70,7 +70,7 @@ pub fn burn_lst_to_redeem_sol(program_id:&Pubkey, accounts:&[AccountInfo], burn_
 
     //burn lst tokens from user's lst ata
     let mut lst_manager_data=LSTManager::try_from_slice(&lst_manager_pda.data.borrow())?;
-    let total_sol_in_protocol=(lst_manager_data.total_sol_staked - lst_manager_data.total_pending_withdrawl_sol) + (lst_manager_vault_pda.lamports() - rent.minimum_balance(0));
+    let total_sol_in_protocol=lst_manager_data.total_sol_staked + (lst_manager_vault_pda.lamports() - rent.minimum_balance(0));
     let total_lst_in_protocol=Mint::unpack(&lst_mint_pda.data.borrow())?.supply;
 
     //exchange rates
@@ -147,9 +147,7 @@ pub fn burn_lst_to_redeem_sol(program_id:&Pubkey, accounts:&[AccountInfo], burn_
     // splitting a stake account.
         
     lst_manager_data.total_lst_supply-=burn_lst_amount;
-    lst_manager_data.total_pending_withdrawl_sol+=sol_amount_user_gets;
     lst_manager_data.serialize(&mut *lst_manager_pda.data.borrow_mut())?;
-    
     user_withdraw_request_pda_data.serialize(&mut *user_withdraw_request_pda.data.borrow_mut())?;
     epoch_withdraw_pda_data.serialize(&mut *epoch_withdraw_pda.data.borrow_mut())?;
     Ok(())

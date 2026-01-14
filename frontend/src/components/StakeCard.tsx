@@ -15,7 +15,8 @@ let serialisedAmountSchema:borsh.Schema={
 }
 
 const StakeCard = () => {
-  const [stakeAmount, setStakeAmount] = useState<null|number>(null);
+//   const [stakeAmount, setStakeAmount] = useState<null|number>(null);
+  const [stakeAmount, setStakeAmount] = useState(0);
   const [userBalance, setUserBalance] = useState(0);
   let {connection}=useConnection();
   let wallet=useWallet();
@@ -81,7 +82,8 @@ const StakeCard = () => {
             <label className="block text-sm font-medium text-gray-400 mb-2">Amount to Stake</label>
             <div className="relative">
                 {/* <input type="number" value={stakeAmount? stakeAmount: ''} onChange={(e) => setStakeAmount(Number(e.target.value))} */}
-                <input type="number" min={0} value={stakeAmount? stakeAmount: ''} onChange={(e) => setStakeAmount( (Number(e.target.value)>=0) ? Number(e.target.value): (Number(e.target.value)*-1))}
+                {/* <input type="number" min="0" value={stakeAmount} onChange={(e) => setStakeAmount( (Number(e.target.value)>=0) ? Number(e.target.value): (Number(e.target.value)*-1))} */}
+                <input type="number" min="0" value={stakeAmount} onChange={(e) => setStakeAmount( (Number(e.target.value)>=0) ? Number(e.target.value): (Number(e.target.value)*-1))}
                     placeholder="0.00" className="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-4 text-2xl font-semibold focus:outline-none focus:border-purple-500 transition-colors"/>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                     <span className="text-gray-400 font-medium">SOL</span>
@@ -125,7 +127,7 @@ const StakeCard = () => {
         </div>
 
         <button disabled={!userAddress.user_address || !stakeAmount} onClick={stakeSOLToLST}
-             className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed py-4 rounded-xl font-semibold text-lg transition-all">
+             className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed py-4 rounded-xl font-semibold text-lg transition-all cursor-pointer">
             {!userAddress.user_address? 'Connect Wallet' : 'Stake SOL'}
         </button>
     </div>

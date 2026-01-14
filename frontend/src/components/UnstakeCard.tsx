@@ -82,7 +82,8 @@ const UnstakeCard = () => {
             <label className="block text-sm font-medium text-gray-400 mb-2">Amount to Unstake</label>
             <div className="relative">
                 {/* <input type="number" min={0}  value={unstakeAmount? unstakeAmount: ''} onChange={(e) => setUnstakeAmount(Number(e.target.value))} */}
-                <input type="number" min={0}  value={unstakeAmount? unstakeAmount: ''} onChange={(e) => setUnstakeAmount(Number(e.target.value)>=0? Number(e.target.value): Number(e.target.value)*-1)}
+                {/* <input type="number" min={0}  value={unstakeAmount? unstakeAmount: ''} onChange={(e) => setUnstakeAmount(Number(e.target.value)>=0? Number(e.target.value): Number(e.target.value)*-1)} */}
+                <input type="number" min={0}  value={unstakeAmount? unstakeAmount: 0} onChange={(e) => setUnstakeAmount(Number(e.target.value)>=0? Number(e.target.value): Number(e.target.value)*-1)}
                 placeholder="0.00" className="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-4 text-2xl font-semibold focus:outline-none focus:border-purple-500 transition-colors"/>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                     <span className="text-gray-400 font-medium">dSOL</span>

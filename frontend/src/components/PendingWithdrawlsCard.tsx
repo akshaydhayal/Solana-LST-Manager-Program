@@ -3,14 +3,17 @@ import { useEffect, useState } from 'react'
 import { useRecoilValue } from 'recoil';
 import { navState } from '../state/navState';
 import {getUserWithdrawRequest } from '../lib/helpers';
-import { useConnection } from '@solana/wallet-adapter-react';
-import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { lstManagerWithdrawVaultPda } from '../lib/constants';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
+import { lstManagerBump, lstManagerPda, lstManagerWithdrawVaultBump, lstManagerWithdrawVaultPda, PROGRAM_ID } from '../lib/constants';
+import { Buffer } from 'buffer';
 
 const PendingWithdrawlsCard = () => {
+  let {connection}=useConnection();
+  let wallet=useWallet();
+
   const [userWithdrawData, setUserWithdrawData] = useState(null);
   const [currentEpoch, setCurrentEpoch] = useState(0);
-  let {connection}=useConnection();
   let userAddress=useRecoilValue(navState);
   console.log("userWithdrawData : ",userWithdrawData);
   //@ts-ignore
@@ -34,6 +37,31 @@ const PendingWithdrawlsCard = () => {
     getWithdrawData();
 },[userAddress, connection])
 
+  async function claimSolFromWithdrawVault(){
+    if(!userAddress.user_address){return;}
+    let [userWithdrawRequestPda,userWithdrawRequestBump]=PublicKey.findProgramAddressSync([Buffer.from("user_withdraw_request"), userAddress.user_address?.toBuffer()],PROGRAM_ID);
+
+    let ix=new TransactionInstruction({
+        programId:PROGRAM_ID,
+        keys:[
+            {pubkey:userAddress.user_address, isSigner:true, isWritable:true},
+            {pubkey:lstManagerPda, isSigner:false, isWritable:true},
+            {pubkey:lstManagerWithdrawVaultPda, isSigner:false, isWritable:true},
+            {pubkey:userWithdrawRequestPda, isSigner:false, isWritable:true},
+            {pubkey:SystemProgram.programId, isSigner:false, isWritable:false},
+        ],
+        data:Buffer.concat([
+            Buffer.from([6]),
+            Buffer.from([lstManagerBump]),
+            Buffer.from([lstManagerWithdrawVaultBump]),
+            Buffer.from([userWithdrawRequestBump]),
+        ])
+    });
+    let tx=new Transaction().add(ix);
+    let txStatus=await wallet.sendTransaction(tx,connection);
+    await connection.confirmTransaction(txStatus,"confirmed");
+    console.log("claim sol txStatus : ",txStatus);
+  }
   // Mock data
 //   const pendingWithdrawals = [
 //     { amount: '10.5', unlockEpoch: 534, currentEpoch: 532, status: 'pending' },
@@ -72,7 +100,7 @@ const PendingWithdrawlsCard = () => {
                 </div>
 
                  {/* @ts-ignore */}
-                 <button disabled={currentEpoch < (Number(userWithdrawData.requested_epoch)+1)}
+                 <button onClick={claimSolFromWithdrawVault} disabled={currentEpoch < (Number(userWithdrawData.requested_epoch)+1)}
                      className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:shadow-lg disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed py-2 rounded-lg text-sm font-medium transition-all">
                     {/* @ts-ignore */}
                      {currentEpoch >= (Number(userWithdrawData.requested_epoch)+1) ? 'Claim SOL Now' : 'Waiting for epoch end...'}

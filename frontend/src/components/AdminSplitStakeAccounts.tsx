@@ -1,5 +1,5 @@
 import { useConnection } from '@solana/wallet-adapter-react';
-import { CheckCircle, Database } from 'lucide-react'
+import { CheckCircle, CircleX, CrossIcon, Database, WatchIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { stakeAccountsSchema, StakeRegistryRecordSchema, valueToU64Schema } from '../lib/borshSchema';
 import * as borsh from "borsh";
@@ -54,7 +54,8 @@ const AdminSplitStakeAccounts = () => {
                 //@ts-ignore
                 deactivationEpoch:Number(deserialisedSplitAccData.stake_delegation_deactivation_epoch),
                 //@ts-ignore
-                withdrawReady:(epoch >= Number(deserialisedSplitAccData.stake_delegation_deactivation_epoch))
+                // withdrawReady:(epoch >= Number(deserialisedSplitAccData.stake_delegation_deactivation_epoch))
+                withdrawReady:(epoch >= Number(deserialisedSplitAccData.stake_delegation_deactivation_epoch)+1)
               });
             }
           }
@@ -87,8 +88,8 @@ const AdminSplitStakeAccounts = () => {
                     <CheckCircle size={10} /> Ready
                 </span>
                 ) : (
-                <span className="px-2 py-0.5 bg-orange-600/20 text-orange-400 text-xs rounded-full border border-orange-600/30">
-                    {1} epochs
+                <span className="px-2 py-0.5 bg-orange-600/20 text-orange-400 text-xs rounded-full border border-orange-600/30 flex items-center gap-1">
+                    <CircleX size={10}/> Deactivating
                     {/* {acc.unlockEpoch - acc.currentEpoch} epochs */}
                 </span>
                 )}
