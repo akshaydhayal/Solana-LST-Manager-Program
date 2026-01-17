@@ -1,5 +1,5 @@
 import { useConnection } from '@solana/wallet-adapter-react';
-import { CheckCircle, CircleX, CrossIcon, Database, WatchIcon } from 'lucide-react'
+import { CheckCircle, CircleX, Database } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { stakeAccountsSchema, StakeRegistryRecordSchema, valueToU64Schema } from '../lib/borshSchema';
 import * as borsh from "borsh";
