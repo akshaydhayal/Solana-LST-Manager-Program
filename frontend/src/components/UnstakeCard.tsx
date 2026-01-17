@@ -17,6 +17,8 @@ let serialisedU64Schema:borsh.Schema={
 const UnstakeCard = () => {
   const [unstakeAmount, setUnstakeAmount] = useState<null|number>(null);
   const [userLstBalance, setUserLstBalance] = useState(0);
+  const [txSig, setTxSig] = useState('');
+
   let {connection}=useConnection();
   let wallet=useWallet();
 
@@ -35,7 +37,7 @@ const UnstakeCard = () => {
         setUserLstBalance(userLstBal);
     }
     getUserTokenBalance();
-  },[connection,wallet,userAddress])
+  },[connection, wallet, userAddress, txSig])
 
   async function unstakeLST(){
     if(!userAddress.user_address || !unstakeAmount || !wallet){return;}
@@ -73,6 +75,7 @@ const UnstakeCard = () => {
     let tx=new Transaction().add(ix);
     let txStatus=await wallet.sendTransaction(tx,connection);
     await connection.confirmTransaction(txStatus,"confirmed");
+    setTxSig(txStatus);
     console.log("unstake lst txStatus : ",txStatus);
   }
 

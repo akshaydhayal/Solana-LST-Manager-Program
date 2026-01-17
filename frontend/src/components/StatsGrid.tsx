@@ -8,6 +8,7 @@ import { ArrowDownUp, Coins, TrendingUp } from 'lucide-react';
 import { lstToSolExchangeRateState } from '../state/lstToSolExchangeRateState';
 
 type protocolStatType={ protocolTVL: number, protocolActivePendingWithdrawls: number, protocolActiveStaked:number};
+
 const StatsGrid = () => {
   let {connection}=useConnection();
   const [protocolStats, setProtocolStats] = useState<null| protocolStatType>(null);   

@@ -16,6 +16,7 @@ let serialisedAmountSchema:borsh.Schema={
 
 const StakeCard = () => {
 //   const [stakeAmount, setStakeAmount] = useState<null|number>(null);
+  const [txSig, setTxSig] = useState('');
   const [stakeAmount, setStakeAmount] = useState(0);
   const [userBalance, setUserBalance] = useState(0);
   let {connection}=useConnection();
@@ -62,6 +63,7 @@ const StakeCard = () => {
     let txStatus=await wallet.sendTransaction(tx,connection);
     // let txStatus=await connection.sendRawTransaction(tx.serialize());
     await connection.confirmTransaction(txStatus,"confirmed");
+    setTxSig(txStatus);
     console.log("user deposit sol tx status : ",txStatus);
 }
 
@@ -74,7 +76,7 @@ const StakeCard = () => {
     if(userAddress.user_address){
         getUserBalance(userAddress.user_address);
     }
-  },[connection,wallet,userAddress])
+  },[connection,wallet,userAddress, txSig])
 
   return (
     <div className="space-y-6"> 
@@ -126,6 +128,7 @@ const StakeCard = () => {
                 <p className="text-gray-400">Your dSOL LST tokens are immediately liquid and can be used in DeFi while earning staking rewards.</p>
             </div>
         </div>
+        <p> txSig : {txSig}</p>
 
         <button disabled={!userAddress.user_address || !stakeAmount} onClick={stakeSOLToLST}
              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed py-4 rounded-xl font-semibold text-lg transition-all duration-200 cursor-pointer text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30">
