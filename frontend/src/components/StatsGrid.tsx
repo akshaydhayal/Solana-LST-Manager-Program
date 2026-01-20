@@ -43,7 +43,7 @@ const StatsGrid = () => {
   },[connection])
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-8">  
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-2.5 mb-7">  
         {/* <StatCard label="Total Value Locked (TVL)" value={`${protocolTVL?protocolTVL/LAMPORTS_PER_SOL:'0'} SOL`} */}
         <StatCard label="Total Value Locked (TVL)" value={`${protocolStats?.protocolTVL?protocolStats.protocolTVL/LAMPORTS_PER_SOL:'0'} SOL`}
             icon={Coins} gradient=""/>

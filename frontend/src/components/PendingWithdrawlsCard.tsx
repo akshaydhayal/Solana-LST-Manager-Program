@@ -30,7 +30,6 @@ const PendingWithdrawlsCard = () => {
         //@ts-ignore
         setUserWithdrawData(userWithdrawRequestData);
         // user_withdraw_request_data.withdraw_status=UserWithdrawStatus::COMPLETED;
-
     }
     async function getCurrentEpoch(){
         let epoch=(await connection.getEpochInfo()).epoch;
@@ -74,32 +73,32 @@ const PendingWithdrawlsCard = () => {
 //   ];
 
   return (
-    <div className="bg-gradient-to-br from-gray-800/90 via-gray-800/80 to-gray-800/90 backdrop-blur-sm rounded-2xl border border-green-500/20 shadow-lg shadow-green-500/10 p-6">
-        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-        <Clock size={20} className="text-green-400" />Pending Withdrawals</h3>
+    <div className="bg-gradient-to-br from-gray-800/90 via-gray-800/80 to-gray-800/90 backdrop-blur-sm rounded-xl border border-green-500/20 shadow-lg shadow-green-500/10 p-5">
+        <h3 className="text-base font-semibold mb-3.5 flex items-center gap-1.5 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+        <Clock size={18} className="text-green-400" />Pending Withdrawals</h3>
 
         {userAddress.user_address ? (
-        <div className="space-y-3">
-            {userWithdrawData ? (<div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700/50">
-                <div className="flex justify-between items-start mb-2">
+        <div className="space-y-2.5">
+            {userWithdrawData ? (<div className="bg-gray-900/50 rounded-lg p-3.5 border border-gray-700/50">
+                <div className="flex justify-between items-start mb-1.5">
                     <div>
                         {/* @ts-ignore */}
-                        <div className="text-xl font-semibold text-white">{Number(userWithdrawData?.sol_amount_user_gets)/LAMPORTS_PER_SOL} SOL</div>
+                        <div className="text-lg font-semibold text-white">{Number(userWithdrawData?.sol_amount_user_gets)/LAMPORTS_PER_SOL} SOL</div>
                         {/* @ts-ignore */}
-                        <div className="text-xs text-gray-400 mt-1">Withdraw Status: {Number(userWithdrawData.withdraw_status)}</div>
+                        <div className="text-[10px] text-gray-400 mt-0.5">Withdraw Status: {Number(userWithdrawData.withdraw_status)}</div>
                         {/* @ts-ignore */}
-                        <div className="text-xs text-gray-400 mt-1">Requested Epoch: {Number(userWithdrawData.requested_epoch)}</div>
+                        <div className="text-[10px] text-gray-400 mt-0.5">Requested Epoch: {Number(userWithdrawData.requested_epoch)}</div>
                         {/* @ts-ignore */}
-                        <div className="text-xs text-gray-400 mt-1">Unlock Epoch: {Number(userWithdrawData.requested_epoch)+1}</div>
+                        <div className="text-[10px] text-gray-400 mt-0.5">Unlock Epoch: {Number(userWithdrawData.requested_epoch)+1}</div>
                         {/* <div className="text-xs text-gray-400 mt-1">Current Epoch: {currentEpoch}</div> */}
                     </div>
                     {/* {withdrawal.status === 'ready' ? ( */}
                     {/* @ts-ignore */}
                     {currentEpoch >= (Number(userWithdrawData.requested_epoch) +1) ? (
-                        <span className="px-2 py-1 bg-green-600/20 text-green-400 text-xs rounded-full border border-green-600/30 flex items-center gap-1">
-                        <CheckCircle size={12} />Ready</span>
+                        <span className="px-1.5 py-0.5 bg-green-600/20 text-green-400 text-[10px] rounded-full border border-green-600/30 flex items-center gap-0.5">
+                        <CheckCircle size={10} />Ready</span>
                     ) : (
-                        <span className="px-2 py-1 bg-orange-600/20 text-orange-400 text-xs rounded-full border border-orange-600/30">
+                        <span className="px-1.5 py-0.5 bg-orange-600/20 text-orange-400 text-[10px] rounded-full border border-orange-600/30">
                         {/* {withdrawal.unlockEpoch - withdrawal.currentEpoch} epochs</span> */}
                         {/* Claim after {currentEpoch - Number(userWithdrawData.requested_epoch)} epoch</span> */}
                         Claim after 1 epoch</span>
@@ -108,22 +107,22 @@ const PendingWithdrawlsCard = () => {
 
                  {/* @ts-ignore */}
                  <button onClick={claimSolFromWithdrawVault} disabled={currentEpoch < (Number(userWithdrawData.requested_epoch)+1)}
-                     className="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-500 hover:from-green-500 hover:via-emerald-500 hover:to-teal-400 hover:shadow-xl hover:shadow-green-500/50 disabled:from-gray-800 disabled:via-gray-800 disabled:to-gray-800 disabled:cursor-not-allowed disabled:text-gray-200 disabled:border-2 disabled:border-green-500/50 py-2 rounded-lg text-sm font-medium transition-all text-white">
+                     className="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-500 hover:from-green-500 hover:via-emerald-500 hover:to-teal-400 hover:shadow-xl hover:shadow-green-500/50 disabled:from-gray-800 disabled:via-gray-800 disabled:to-gray-800 disabled:cursor-not-allowed disabled:text-gray-200 disabled:border-2 disabled:border-green-500/50 py-1.5 rounded-lg text-xs font-medium transition-all text-white">
                     {/* @ts-ignore */}
                      {currentEpoch >= (Number(userWithdrawData.requested_epoch)+1) ? 'Claim SOL Now' : 'Waiting for epoch end...'}
                  </button>
             </div>
         ) : (
-            <p className="text-gray-400 text-sm text-center py-4">
+            <p className="text-gray-400 text-xs text-center py-3.5">
                 No Pending Withdrawls for User
             </p>
         )
         }
         </div>
         ) : (
-        <div className="text-center py-8 text-gray-400">
-            <Wallet size={32} className="mx-auto mb-2 opacity-50" />
-            <p className="text-sm">Connect wallet to view withdrawals</p>
+        <div className="text-center py-7 text-gray-400">
+            <Wallet size={28} className="mx-auto mb-1.5 opacity-50" />
+            <p className="text-xs">Connect wallet to view withdrawals</p>
         </div>
         )}
     </div>

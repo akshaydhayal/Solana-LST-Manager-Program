@@ -50,22 +50,22 @@ const AdminStakeAccounts = () => {
   },[connection])
 
   return (
-    <div className="bg-gradient-to-br from-gray-800/90 via-gray-800/80 to-gray-800/90 backdrop-blur-sm rounded-2xl border-2 border-green-500/20 shadow-lg shadow-green-500/10 p-6">
-        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-          <TrendingUp size={20} className="text-green-400" />Active Stake Accounts</h3>
-        <div className="space-y-3">
+    <div className="bg-gradient-to-br from-gray-800/90 via-gray-800/80 to-gray-800/90 backdrop-blur-sm rounded-xl border-2 border-green-500/20 shadow-lg shadow-green-500/10 p-5">
+        <h3 className="text-base font-semibold mb-3.5 flex items-center gap-1.5 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+          <TrendingUp size={18} className="text-green-400" />Active Stake Accounts</h3>
+        <div className="space-y-2.5">
           {activeStakeAccounts.length>0 ? activeStakeAccounts.map((acc) => (
-              <div key={acc.index} className="bg-gray-900/50 rounded-lg p-3 border border-gray-700/50">
-                <div className="flex justify-between items-start mb-2">
-                    <div className="font-mono text-xs text-gray-400 truncate">{acc.pubkey}</div>
-                    <span className="px-2 py-0.5 bg-green-600/20 text-green-400 text-xs rounded-full border border-green-600/30">Active</span>
+              <div key={acc.index} className="bg-gray-900/50 rounded-lg p-2.5 border border-gray-700/50">
+                <div className="flex justify-between items-start mb-1.5">
+                    <div className="font-mono text-[10px] text-gray-400 truncate">{acc.pubkey}</div>
+                    <span className="px-1.5 py-0.5 bg-green-600/20 text-green-400 text-[10px] rounded-full border border-green-600/30">Active</span>
                 </div>
-                <div className="text-lg font-semibold text-white">{(acc.stakeAmount/LAMPORTS_PER_SOL)} SOL</div>
-                <div className="text-xs text-gray-400 mt-1">Activation mmmmn Epoch: {acc.activatedEpoch}</div>
+                <div className="text-base font-semibold text-white">{(acc.stakeAmount/LAMPORTS_PER_SOL)} SOL</div>
+                <div className="text-[10px] text-gray-400 mt-0.5">Activation mmmmn Epoch: {acc.activatedEpoch}</div>
               </div>
           )):
           (
-          <p className="text-gray-400 text-sm text-center py-4">No Active Stake accounts</p>
+          <p className="text-gray-400 text-xs text-center py-3.5">No Active Stake accounts</p>
           )
         }
         </div>

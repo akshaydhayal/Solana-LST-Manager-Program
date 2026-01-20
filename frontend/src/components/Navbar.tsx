@@ -22,14 +22,14 @@ const Navbar = () => {
 
   return (
     <div className="border-b border-purple-500/20 backdrop-blur-sm bg-gradient-to-r from-gray-900/95 via-gray-900/90 to-gray-900/95 shadow-lg shadow-purple-500/5">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/30">
-                    <TrendingUp size={24} className="text-white" />
+        <div className="max-w-7xl mx-auto px-5 py-3.5 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/30">
+                    <TrendingUp size={20} className="text-white" />
                 </div>
                 <div>
-                    <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Devnet SolStake</h1>
-                    <p className="text-xs text-gray-400">Liquid Staking Protocol</p>
+                    <h1 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Devnet SolStake</h1>
+                    <p className="text-[10px] text-gray-400">Liquid Staking Protocol</p>
                 </div>
             </div>
             <WalletMultiButton/>

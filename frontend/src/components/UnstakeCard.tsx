@@ -91,55 +91,55 @@ const UnstakeCard = () => {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2.5">
         <div>
-            <label className="block text-sm font-medium text-red-300 mb-1.5">Amount to Unstake</label>
+            <label className="block text-xs font-medium text-red-300 mb-1">Amount to Unstake</label>
             <div className="relative">
                 <input type="number" min={0}  value={unstakeAmount? unstakeAmount: 0} onChange={(e) => setUnstakeAmount(Number(e.target.value)>=0? Number(e.target.value): Number(e.target.value)*-1)}
-                placeholder="0.00" className={`w-full bg-gradient-to-br from-gray-900/60 to-gray-900/40 border-2 ${unstakeAmount && unstakeAmount > userLstBalance ? 'border-red-500/50' : 'border-red-500/30'} text-red-300 rounded-xl px-4 py-3 text-xl font-semibold focus:outline-none focus:border-red-500 focus:shadow-lg focus:shadow-red-500/20 transition-all`}/>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                    <span className="text-red-300 font-medium text-sm">dSOL</span>
-                    <button className="text-xs text-red-400 hover:text-red-300 font-medium cursor-pointer px-2 py-0.5 rounded hover:bg-red-500/10 transition-colors" onClick={()=>{
+                placeholder="0.00" className={`w-full bg-gradient-to-br from-gray-900/60 to-gray-900/40 border-2 ${unstakeAmount && unstakeAmount > userLstBalance ? 'border-red-500/50' : 'border-red-500/30'} text-red-300 rounded-lg px-3.5 py-2.5 text-lg font-semibold focus:outline-none focus:border-red-500 focus:shadow-lg focus:shadow-red-500/20 transition-all`}/>
+                <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                    <span className="text-red-300 font-medium text-xs">dSOL</span>
+                    <button className="text-[10px] text-red-400 hover:text-red-300 font-medium cursor-pointer px-1.5 py-0.5 rounded hover:bg-red-500/10 transition-colors" onClick={()=>{
                         setUnstakeAmount(userLstBalance/2);
                     }}>HALF</button>
-                    <button className="text-xs text-red-400 hover:text-red-300 font-medium cursor-pointer px-2 py-0.5 rounded hover:bg-red-500/10 transition-colors" onClick={()=>{
+                    <button className="text-[10px] text-red-400 hover:text-red-300 font-medium cursor-pointer px-1.5 py-0.5 rounded hover:bg-red-500/10 transition-colors" onClick={()=>{
                         setUnstakeAmount(userLstBalance);
                     }}>MAX</button>
                 </div>
             </div>
-            <div className="flex justify-between mt-1.5 text-xs text-gray-400">
+            <div className="flex justify-between mt-1 text-[10px] text-gray-400">
                 <span>Balance: <span className="text-red-300 font-medium">{userLstBalance} dSOL</span></span>
             </div>
             {unstakeAmount && unstakeAmount > userLstBalance && (
-                <div className="mt-1 text-xs text-red-400 font-medium">
+                <div className="mt-1 text-[10px] text-red-400 font-medium">
                     Insufficient balance. You have {userLstBalance} dSOL but trying to unstake {unstakeAmount} dSOL.
                 </div>
             )}
         </div>
 
-        <div className="flex items-center justify-center py-1">
-            <div className="w-8 h-8 bg-gradient-to-br from-red-600/20 to-orange-600/20 rounded-full flex items-center justify-center border-2 border-red-500/30 shadow-md shadow-red-500/10">
-                <ArrowDown size={16} className="text-red-400" />
+        <div className="flex items-center justify-center py-0.5">
+            <div className="w-7 h-7 bg-gradient-to-br from-red-600/20 to-orange-600/20 rounded-full flex items-center justify-center border-2 border-red-500/30 shadow-md shadow-red-500/10">
+                <ArrowDown size={14} className="text-red-400" />
             </div>
         </div>
 
         <div>
-            <label className="block text-sm font-medium text-red-300 mb-1.5">You Will Receive (After Cooldown)</label>
-            <div className="bg-gradient-to-br from-orange-900/20 to-red-900/20 border-2 border-orange-500/30 rounded-xl px-4 py-3 shadow-lg shadow-orange-500/10">
-                <div className="text-xl font-semibold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">{unstakeAmount ? (unstakeAmount * lstToSolExchangeRate).toFixed(4) : '0.00'}</div>
-                <div className="text-xs text-gray-400 mt-0.5">SOL</div>
+            <label className="block text-xs font-medium text-red-300 mb-1">You Will Receive (After Cooldown)</label>
+            <div className="bg-gradient-to-br from-orange-900/20 to-red-900/20 border-2 border-orange-500/30 rounded-lg px-3.5 py-2.5 shadow-lg shadow-orange-500/10">
+                <div className="text-lg font-semibold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">{unstakeAmount ? (unstakeAmount * lstToSolExchangeRate).toFixed(4) : '0.00'}</div>
+                <div className="text-[10px] text-gray-400 mt-0.5">SOL</div>
             </div>
         </div>
 
-        <div className="bg-gradient-to-br from-orange-900/30 to-red-900/20 border-2 border-orange-500/30 rounded-lg p-3 flex gap-2 shadow-lg shadow-orange-500/10">
-            <Clock size={16} className="text-orange-400 flex-shrink-0 mt-0.5" />
-            <div className="text-xs text-gray-300">
+        <div className="bg-gradient-to-br from-orange-900/30 to-red-900/20 border-2 border-orange-500/30 rounded-lg p-2.5 flex gap-1.5 shadow-lg shadow-orange-500/10">
+            <Clock size={14} className="text-orange-400 flex-shrink-0 mt-0.5" />
+            <div className="text-[10px] text-gray-300">
                 <p className="font-medium text-white mb-0.5">Unstaking Period</p>
                 <p className="text-gray-400">Unstaking requires 1 epoch (max 2 days). You can claim your SOL once the cooldown period ends.</p>
             </div>
         </div>
 
-        <button disabled={!userAddress.user_address || !unstakeAmount || unstakeAmount > userLstBalance} onClick={unstakeLST} className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed py-3 rounded-xl font-semibold text-base transition-all duration-200 cursor-pointer text-white shadow-lg shadow-orange-500/20 hover:shadow-xl hover:shadow-orange-500/30">
+        <button disabled={!userAddress.user_address || !unstakeAmount || unstakeAmount > userLstBalance} onClick={unstakeLST} className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 cursor-pointer text-white shadow-lg shadow-orange-500/20 hover:shadow-xl hover:shadow-orange-500/30">
             {!userAddress.user_address ? 'Connect Wallet' : 'Burn dSOL & Request Unstake'}
         </button>
     </div>

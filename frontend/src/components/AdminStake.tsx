@@ -81,22 +81,22 @@ async function stakeVaultSolToValidator(){
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-800/90 via-gray-800/80 to-gray-800/90 backdrop-blur-sm rounded-2xl border-2 border-green-500/20 shadow-lg shadow-green-500/10 p-6">
-        <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-            <TrendingUp size={22} className="text-green-400" />Stake User Deposited SOL to Validators</h3>
+    <div className="bg-gradient-to-br from-gray-800/90 via-gray-800/80 to-gray-800/90 backdrop-blur-sm rounded-xl border-2 border-green-500/20 shadow-lg shadow-green-500/10 p-5">
+        <h3 className="text-lg font-semibold mb-3.5 flex items-center gap-1.5 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+            <TrendingUp size={20} className="text-green-400" />Stake User Deposited SOL to Validators</h3>
 
-        <div className="space-y-4">
+        <div className="space-y-3.5">
             <div>
-                <label className="text-sm text-green-300 mb-2 block">Available Vault Balance for Staking</label>
-                <div className="text-3xl font-bold mb-4 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">{vaultBalance/LAMPORTS_PER_SOL} SOL</div>
+                <label className="text-xs text-green-300 mb-1.5 block">Available Vault Balance for Staking</label>
+                <div className="text-2xl font-bold mb-3.5 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">{vaultBalance/LAMPORTS_PER_SOL} SOL</div>
             </div>
 
             <div>
-                <label className="text-sm text-green-300 mb-2 block">Select Validator (Vote Account)</label>
+                <label className="text-xs text-green-300 mb-1.5 block">Select Validator (Vote Account)</label>
                 <select
                     value={selectedValidator}
                     onChange={(e) => setSelectedValidator(e.target.value)}
-                    className="w-full bg-gradient-to-br from-gray-900/60 to-gray-900/40 border-2 border-green-500/30 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 focus:shadow-lg focus:shadow-green-500/20 transition-all cursor-pointer"
+                    className="w-full bg-gradient-to-br from-gray-900/60 to-gray-900/40 border-2 border-green-500/30 text-white rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-green-500 focus:shadow-lg focus:shadow-green-500/20 transition-all cursor-pointer text-sm"
                 >
                     <option value="" className="bg-gray-900">
                         {allValidators.length > 0 ? "Choose a validator..." : "No validators loaded (waiting for allValidators)"}
@@ -110,7 +110,7 @@ async function stakeVaultSolToValidator(){
                         );
                     })}
                 </select>
-                <p className="text-xs text-gray-400 mt-2">
+                <p className="text-[10px] text-gray-400 mt-1.5">
                     Using: <span className="text-green-300 font-mono">{(selectedValidator || "DSQ5BLBM6UcuWP2SNpmf3TJeMbqbwTFGzVqFGufyNCgk")}</span>
                 </p>
             </div>
@@ -132,14 +132,14 @@ async function stakeVaultSolToValidator(){
                 </div>
             </div> */}
 
-            <div className="bg-blue-600/10 border border-blue-500/30 rounded-lg p-4">
-                <div className="flex gap-2 text-sm">
-                    <AlertCircle size={16} className="text-blue-400 flex-shrink-0 mt-0.5" />
+            <div className="bg-blue-600/10 border border-blue-500/30 rounded-lg p-3.5">
+                <div className="flex gap-1.5 text-xs">
+                    <AlertCircle size={14} className="text-blue-400 flex-shrink-0 mt-0.5" />
                     <div className="text-blue-300">This will create a new stake account and delegate SOL from the vault to a validator.Ensure you have selected a validator before proceeding.</div>
                 </div>
             </div>
 
-            <button className="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-500 hover:from-green-500 hover:via-emerald-500 hover:to-teal-400 hover:shadow-2xl hover:shadow-green-500/50 py-4 rounded-xl text-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-white"
+            <button className="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-500 hover:from-green-500 hover:via-emerald-500 hover:to-teal-400 hover:shadow-2xl hover:shadow-green-500/50 py-3 rounded-lg text-base font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-white"
                 onClick={stakeVaultSolToValidator}>Stake Vault SOL to Validator
                 {/* disabled={!stakeAmount || parseFloat(stakeAmount) <= 0}>Stake Vault SOL to Validator */}
             </button>

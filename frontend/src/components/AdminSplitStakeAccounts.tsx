@@ -72,38 +72,38 @@ const AdminSplitStakeAccounts = () => {
   //   { index: 2, address: '5pD9...zX6w', amount: 3000, status: 'deactivating', unlockEpoch: 1007, currentEpoch: 1005 },
   // ];
   return (
-    <div className="bg-gradient-to-br from-gray-800/90 via-gray-800/80 to-gray-800/90 backdrop-blur-sm rounded-2xl border-2 border-purple-500/20 shadow-lg shadow-purple-500/10 p-6">
-        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-        <Database size={20} className="text-purple-400" />Split Stake Accounts</h3>
-        <div className="space-y-3">
+    <div className="bg-gradient-to-br from-gray-800/90 via-gray-800/80 to-gray-800/90 backdrop-blur-sm rounded-xl border-2 border-purple-500/20 shadow-lg shadow-purple-500/10 p-5">
+        <h3 className="text-base font-semibold mb-3.5 flex items-center gap-1.5 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+        <Database size={18} className="text-purple-400" />Split Stake Accounts</h3>
+        <div className="space-y-2.5">
         {/* {splitStakeAccounts.map((acc) => ( */}
         {activeSplitAccounts.length>0 ? activeSplitAccounts.map((acc) => (
-            <div key={acc.index} className="bg-gray-900/50 rounded-lg p-3 border border-gray-700/50">
-            <div className="flex justify-between items-start mb-2"> 
+            <div key={acc.index} className="bg-gray-900/50 rounded-lg p-2.5 border border-gray-700/50">
+            <div className="flex justify-between items-start mb-1.5"> 
                 {/* <div className="font-mono text-xs text-gray-400">{acc.address}</div> */}
-                <div className="font-mono text-xs text-gray-400 truncate">{acc.pubkey}</div>
+                <div className="font-mono text-[10px] text-gray-400 truncate">{acc.pubkey}</div>
                 {/* {acc.status === 'inactive' ? ( */}
                 {acc.withdrawReady ===true ? (
-                <span className="px-2 py-0.5 bg-green-600/20 text-green-400 text-xs rounded-full border border-green-600/30 flex items-center gap-1">
-                    <CheckCircle size={10} /> Ready
+                <span className="px-1.5 py-0.5 bg-green-600/20 text-green-400 text-[10px] rounded-full border border-green-600/30 flex items-center gap-0.5">
+                    <CheckCircle size={9} /> Ready
                 </span>
                 ) : (
-                <span className="px-2 py-0.5 bg-orange-600/20 text-orange-400 text-xs rounded-full border border-orange-600/30 flex items-center gap-1">
-                    <CircleX size={10}/> Deactivating
+                <span className="px-1.5 py-0.5 bg-orange-600/20 text-orange-400 text-[10px] rounded-full border border-orange-600/30 flex items-center gap-0.5">
+                    <CircleX size={9}/> Deactivating
                     {/* {acc.unlockEpoch - acc.currentEpoch} epochs */}
                 </span>
                 )}
             </div>
             {/* <div className="text-lg font-semibold">{acc.amount.toLocaleString()} SOL</div> */}
-            <div className="text-lg font-semibold text-white">{acc.stakeAmount/LAMPORTS_PER_SOL} SOL</div>
-            <div className="text-xs text-gray-400 mt-1">Deactivation Epoch : {acc.deactivationEpoch}</div>
-            <div className="text-xs text-gray-400 mt-1">Current Epoch : {currentEpoch}</div>
+            <div className="text-base font-semibold text-white">{acc.stakeAmount/LAMPORTS_PER_SOL} SOL</div>
+            <div className="text-[10px] text-gray-400 mt-0.5">Deactivation Epoch : {acc.deactivationEpoch}</div>
+            <div className="text-[10px] text-gray-400 mt-0.5">Current Epoch : {currentEpoch}</div>
             {/* <div className="text-xs text-gray-400 mt-1">Unlock: Epoch {acc.unlockEpoch}</div> */}
-            <div className="text-xs text-gray-400 mt-1">Split Index: {acc.index}</div>
+            <div className="text-[10px] text-gray-400 mt-0.5">Split Index: {acc.index}</div>
             </div>
         )):
         (
-          <p className="text-gray-400 text-sm text-center py-4">No Active Split Stake accounts</p>
+          <p className="text-gray-400 text-xs text-center py-3.5">No Active Split Stake accounts</p>
         )
         }
         </div>

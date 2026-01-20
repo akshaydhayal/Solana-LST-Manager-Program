@@ -70,19 +70,19 @@ const AdminWithdraw = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-800/90 via-gray-800/80 to-gray-800/90 backdrop-blur-sm rounded-2xl border-2 border-purple-500/20 shadow-lg shadow-purple-500/10 p-6">
-        <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-            <Database size={22} className="text-purple-400" />Withdraw from Split Stake Acc to Withdraw Vault
+    <div className="bg-gradient-to-br from-gray-800/90 via-gray-800/80 to-gray-800/90 backdrop-blur-sm rounded-xl border-2 border-purple-500/20 shadow-lg shadow-purple-500/10 p-5">
+        <h3 className="text-lg font-semibold mb-3.5 flex items-center gap-1.5 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <Database size={20} className="text-purple-400" />Withdraw from Split Stake Acc to Withdraw Vault
         </h3>
-        <div className="space-y-4">
+        <div className="space-y-3.5">
             <div>
-                <label className="text-sm text-purple-300 mb-2 block">Available Withdraw Vault Balance</label>
-                <div className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">{withdrawVaultBalance/LAMPORTS_PER_SOL} SOL</div>
+                <label className="text-xs text-purple-300 mb-1.5 block">Available Withdraw Vault Balance</label>
+                <div className="text-2xl font-bold mb-3.5 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">{withdrawVaultBalance/LAMPORTS_PER_SOL} SOL</div>
             </div>
 
             <div>
-                <label className="text-sm text-purple-300 mb-2 block">Select Split Stake Account</label>
-                <select value={selectedSplitStake} onChange={(e) => setSelectedSplitStake(e.target.value)} className="w-full bg-gradient-to-br from-gray-900/60 to-gray-900/40 border-2 border-purple-500/30 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-purple-500 focus:shadow-lg focus:shadow-purple-500/20 transition-all cursor-pointer">
+                <label className="text-xs text-purple-300 mb-1.5 block">Select Split Stake Account</label>
+                <select value={selectedSplitStake} onChange={(e) => setSelectedSplitStake(e.target.value)} className="w-full bg-gradient-to-br from-gray-900/60 to-gray-900/40 border-2 border-purple-500/30 text-white rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-purple-500 focus:shadow-lg focus:shadow-purple-500/20 transition-all cursor-pointer text-sm">
                     <option value="" className="bg-gray-900">Choose a split stake account...</option>
                     {/* {splitStakeAccounts.map((acc) => ( */}
                     {activeSplitAccounts.map((acc,ind) => (
@@ -95,19 +95,19 @@ const AdminWithdraw = () => {
             </div>
 
             {selectedSplitStake !== '' && (
-                <div className="bg-gray-900/70 border border-gray-700/50 rounded-xl p-4">
-                    <div className="grid grid-cols-3 gap-4 text-sm">
+                <div className="bg-gray-900/70 border border-gray-700/50 rounded-lg p-3.5">
+                    <div className="grid grid-cols-3 gap-3.5 text-xs">
                         <div>
                             <div className="text-gray-400">Amount</div>
                             {/* <div className="text-lg font-semibold">{splitStakeAccounts[parseInt(selectedSplitStake)].amount.toLocaleString()} SOL</div> */}
-                            <div className="text-lg font-semibold text-white">{activeSplitAccounts[Number(selectedSplitStake)].stakeAmount/LAMPORTS_PER_SOL} SOL</div>
+                            <div className="text-base font-semibold text-white">{activeSplitAccounts[Number(selectedSplitStake)].stakeAmount/LAMPORTS_PER_SOL} SOL</div>
                         </div>
                         <div>
                             <div className="text-gray-400">Withdrawable Status</div>
-                            <div className="text-lg font-semibold">
+                            <div className="text-base font-semibold">
                                 {/* {splitStakeAccounts[parseInt(selectedSplitStake)].status === 'inactive' ? ( */}
                                 {activeSplitAccounts[Number(selectedSplitStake)].withdrawReady === true ? (
-                                    <span className="text-green-400 flex items-center gap-1"><CheckCircle size={16} /> Ready</span>
+                                    <span className="text-green-400 flex items-center gap-0.5"><CheckCircle size={14} /> Ready</span>
                                 ) : (
                                     <span className="text-orange-400">Deactivating</span>
                                 )}
@@ -116,20 +116,20 @@ const AdminWithdraw = () => {
                         <div>
                             <div className="text-gray-400">Deactivation Epoch</div>
                             {/* <div className="text-lg font-semibold">{splitStakeAccounts[parseInt(selectedSplitStake)].unlockEpoch}</div> */}
-                            <div className="text-lg font-semibold text-white">{activeSplitAccounts[Number(selectedSplitStake)].deactivationEpoch}</div>
+                            <div className="text-base font-semibold text-white">{activeSplitAccounts[Number(selectedSplitStake)].deactivationEpoch}</div>
                         </div>
                     </div>
                 </div>
             )}
 
-            <div className="bg-purple-600/10 border border-purple-500/30 rounded-lg p-4">
-                <div className="flex gap-2 text-sm">
-                    <AlertCircle size={16} className="text-purple-400 flex-shrink-0 mt-0.5" />
+            <div className="bg-purple-600/10 border border-purple-500/30 rounded-lg p-3.5">
+                <div className="flex gap-1.5 text-xs">
+                    <AlertCircle size={14} className="text-purple-400 flex-shrink-0 mt-0.5" />
                     <div className="text-purple-300">Only inactive split stake accounts can be withdrawn. SOL will be transferred to the user withdrawal vault.</div>
                 </div>
             </div>
 
-            <button onClick={withdrawToUserWithdrawVault} className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-rose-500 hover:from-purple-500 hover:via-pink-500 hover:to-rose-400 hover:shadow-2xl hover:shadow-purple-500/50 py-4 rounded-xl text-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-white"
+            <button onClick={withdrawToUserWithdrawVault} className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-rose-500 hover:from-purple-500 hover:via-pink-500 hover:to-rose-400 hover:shadow-2xl hover:shadow-purple-500/50 py-3 rounded-lg text-base font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-white"
                 disabled={!selectedSplitStake || activeSplitAccounts[Number(selectedSplitStake)]?.withdrawReady !== true}>Withdraw to Vault
                 {/* disabled={!selectedSplitStake || splitStakeAccounts[parseInt(selectedSplitStake)]?.status !== 'inactive'}>Withdraw to Vault */}
             </button>

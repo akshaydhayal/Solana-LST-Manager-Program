@@ -71,8 +71,20 @@ Single README covering the on-chain program and the React/Tailwind frontend.
 
 ## Frontend (frontend/)
 ### Tech
-- React 18, Vite, TypeScript, Tailwind, Recoil, Solana wallet adapter (React UI).
+- React 18, Vite, TypeScript, Tailwind CSS, Recoil, Solana wallet adapter (React UI).
+- Toast notifications via `react-hot-toast` with clickable Solana Explorer links.
 - Defaults to `clusterApiUrl("devnet")`.
+
+### UI Design
+- **Dark Theme**: Consistent dark theme throughout with gray-950/gray-900 backgrounds.
+- **Color Accents**: Strategic use of gradients and colored borders:
+  - Blue/Purple for staking operations
+  - Orange/Red for unstaking operations
+  - Green/Emerald for successful actions and active states
+  - Purple/Pink for admin withdrawal operations
+- **Compact Layout**: Optimized spacing and sizing (approximately 90% scale) for a clean, modern interface.
+- **Responsive Design**: Mobile-friendly grid layouts and adaptive components.
+- **Transaction Feedback**: All successful transactions display friendly toast notifications with clickable Solana Explorer links (devnet).
 
 ### Running locally
 ```bash
@@ -82,19 +94,39 @@ npm run dev   # Vite dev server
 ```
 
 ### Key Screens & Flows
-- **Navbar**: Connect wallet (wallet adapter UI), shows app brand.
+- **Navbar**: Connect wallet (wallet adapter UI), shows app brand with gradient logo and title.
 - **User Dashboard** (`UserPage`):
-  - Stats grid (TVL, LST supply, APY, exchange rate).
-  - **Stake SOL**: Sends `DepositSOLToVault`; mints LST to user ATA. Shows tx signature.
-  - **Unstake dSOL**: Sends `BurnLstToRedeemSOL`; creates/updates withdraw request and epoch withdraw PDAs. Shows tx signature.
-  - **Pending Withdrawals**: Shows current request; if epoch passed, enables claim (calls `ClaimSOLFromWithdrawVault`).
-  - Info card: process steps.
+  - Stats grid (TVL, LST supply, APY, exchange rate, active staked SOL, pending withdrawals).
+  - **Stake SOL**: 
+    - Input validation prevents staking more than available balance.
+    - Sends `DepositSOLToVault`; mints LST to user ATA.
+    - Shows friendly toast notification with Explorer link.
+  - **Unstake dSOL**: 
+    - Input validation prevents unstaking more than available LST balance.
+    - Sends `BurnLstToRedeemSOL`; creates/updates withdraw request and epoch withdraw PDAs.
+    - Shows friendly toast notification with Explorer link.
+  - **Pending Withdrawals**: 
+    - Shows current request with epoch information.
+    - If epoch passed, enables claim button (calls `ClaimSOLFromWithdrawVault`).
+    - Shows friendly toast notification with Explorer link on successful claim.
+  - Info card: Process steps with colored left borders.
 - **Admin Dashboard** (`AdminPage`):
-  - Stats grid plus:
-  - **Stake Vault SOL to Validator**: Calls `StakeVaultSOLToValidator` (admin only).
-  - **Unstake SOL**: Calls `UnstakeSOLFromValidator` to split/deactivate stake for an epoch (admin only).
-  - **Withdraw from Split Stake**: Calls `WithdrawFromSplitStake` to move SOL to user-withdraw vault (admin only).
-  - Lists active stake accounts and split stake accounts with readiness flags.
+  - Stats grid with same metrics as user dashboard.
+  - **Stake Vault SOL to Validator**: 
+    - Dropdown to select validator vote account (fetches all available validators).
+    - Displays available vault balance.
+    - Calls `StakeVaultSOLToValidator` (admin only).
+    - Shows friendly toast notification with Explorer link.
+  - **Unstake SOL**: 
+    - Dropdown to select stake account.
+    - Calls `UnstakeSOLFromValidator` to split/deactivate stake for an epoch (admin only).
+    - Shows friendly toast notification with Explorer link.
+  - **Withdraw from Split Stake**: 
+    - Displays available withdraw vault balance.
+    - Dropdown to select split stake account (only withdrawable accounts enabled).
+    - Calls `WithdrawFromSplitStake` to move SOL to user-withdraw vault (admin only).
+    - Shows friendly toast notification with Explorer link.
+  - Lists active stake accounts and split stake accounts with readiness flags and detailed information.
 
 ### Environment / Constants
 - PDAs and program ID are defined in `frontend/src/lib/constants` (not modified here). Ensure they match deployed program on devnet/mainnet before use.
@@ -134,21 +166,144 @@ npm run dev   # Vite dev server
 
 ## Testing Checklist
 - Wallet connect works on devnet.
-- Stake: SOL debits wallet, LST mints to ATA, tx signature displayed.
-- Unstake: LST burns, withdraw request + epoch withdraw PDAs created/updated, tx signature displayed.
-- Claim: only available after requested_epoch + 1; transfers SOL from withdraw vault and marks request completed.
-- Admin actions require admin pubkey; vault balances update accordingly; split stake becomes withdraw-ready before admin withdraws to user vault.
+- Stake: 
+  - SOL debits wallet, LST mints to ATA.
+  - Balance validation prevents staking more than available.
+  - Toast notification with Explorer link displayed.
+- Unstake: 
+  - LST burns, withdraw request + epoch withdraw PDAs created/updated.
+  - Balance validation prevents unstaking more than available LST.
+  - Toast notification with Explorer link displayed.
+- Claim: 
+  - Only available after requested_epoch + 1.
+  - Transfers SOL from withdraw vault and marks request completed.
+  - Toast notification with Explorer link displayed.
+- Admin actions: 
+  - Require admin pubkey.
+  - Validator dropdown populates with available validators.
+  - Vault balances display correctly.
+  - Split stake becomes withdraw-ready before admin withdraws to user vault.
+  - All admin transactions show toast notifications with Explorer links.
 
 ---
 
-## Screenshots & Demo Placeholders
-- **User Flow Screenshots:**  
-  - Stake form, stake success, unstake request, pending withdrawals, claim ready.
-- **Admin Flow Screenshots:**  
-  - Stake vault, unstake to split, withdraw from split, stake/split lists.
-- **Demo Videos:**  
-  - User demo video (staking → unstaking → claim).  
-  - Admin demo video (stake vault → unstake epoch → withdraw split).
+## Screenshots & Demo
+
+### User Flow Screenshots
+
+#### 1. User Dashboard - Overview
+![User Dashboard Overview](./screenshots/user-dashboard-overview.png)
+*Main user dashboard showing stats grid, stake/unstake tabs, and pending withdrawals card.*
+
+#### 2. Stake SOL Interface
+![Stake SOL Interface](./screenshots/user-stake-interface.png)
+*Stake card showing amount input, balance validation, exchange rate, and stake button.*
+
+#### 3. Stake Success Notification
+![Stake Success](./screenshots/user-stake-success.png)
+*Toast notification showing successful stake transaction with Solana Explorer link.*
+
+#### 4. Unstake dSOL Interface
+![Unstake dSOL Interface](./screenshots/user-unstake-interface.png)
+*Unstake card showing amount input, balance validation, cooldown information, and unstake button.*
+
+#### 5. Unstake Success Notification
+![Unstake Success](./screenshots/user-unstake-success.png)
+*Toast notification showing successful unstake request with Solana Explorer link.*
+
+#### 6. Pending Withdrawals - Waiting
+![Pending Withdrawals Waiting](./screenshots/user-pending-withdrawals-waiting.png)
+*Pending withdrawals card showing withdrawal request with "Waiting for epoch end" status.*
+
+#### 7. Pending Withdrawals - Ready to Claim
+![Pending Withdrawals Ready](./screenshots/user-pending-withdrawals-ready.png)
+*Pending withdrawals card showing withdrawal request ready to claim with "Claim SOL Now" button.*
+
+#### 8. Claim Success Notification
+![Claim Success](./screenshots/user-claim-success.png)
+*Toast notification showing successful claim transaction with Solana Explorer link.*
+
+### Admin Flow Screenshots
+
+#### 9. Admin Dashboard - Overview
+![Admin Dashboard Overview](./screenshots/admin-dashboard-overview.png)
+*Main admin dashboard showing stats grid, admin action tabs, and stake/split account lists.*
+
+#### 10. Stake Vault SOL to Validator
+![Admin Stake Vault](./screenshots/admin-stake-vault.png)
+*Admin stake interface showing vault balance, validator dropdown selector, and stake button.*
+
+#### 11. Admin Stake Success Notification
+![Admin Stake Success](./screenshots/admin-stake-success.png)
+*Toast notification showing successful vault staking transaction with Solana Explorer link.*
+
+#### 12. Unstake SOL from Validator
+![Admin Unstake](./screenshots/admin-unstake.png)
+*Admin unstake interface showing stake account selector, account details, and unstake button.*
+
+#### 13. Admin Unstake Success Notification
+![Admin Unstake Success](./screenshots/admin-unstake-success.png)
+*Toast notification showing successful unstake transaction with Solana Explorer link.*
+
+#### 14. Withdraw from Split Stake
+![Admin Withdraw](./screenshots/admin-withdraw.png)
+*Admin withdraw interface showing withdraw vault balance, split stake account selector, and withdraw button.*
+
+#### 15. Admin Withdraw Success Notification
+![Admin Withdraw Success](./screenshots/admin-withdraw-success.png)
+*Toast notification showing successful withdrawal transaction with Solana Explorer link.*
+
+#### 16. Active Stake Accounts List
+![Active Stake Accounts](./screenshots/admin-active-stake-accounts.png)
+*Sidebar showing list of active stake accounts with amounts and activation epochs.*
+
+#### 17. Split Stake Accounts List
+![Split Stake Accounts](./screenshots/admin-split-stake-accounts.png)
+*Sidebar showing list of split stake accounts with withdraw readiness status and deactivation epochs.*
+
+### Demo Videos
+
+#### User Demo Video
+[![User Demo Video](./screenshots/user-demo-thumbnail.png)](https://youtube.com/watch?v=USER_DEMO_VIDEO_ID)
+*Complete user flow: connecting wallet → staking SOL → receiving LST → unstaking dSOL → waiting for cooldown → claiming SOL.*
+
+**Video Link:** `https://youtube.com/watch?v=USER_DEMO_VIDEO_ID` (Replace with actual video URL)
+
+#### Admin Demo Video
+[![Admin Demo Video](./screenshots/admin-demo-thumbnail.png)](https://youtube.com/watch?v=ADMIN_DEMO_VIDEO_ID)
+*Complete admin flow: connecting admin wallet → staking vault SOL to validator → unstaking for epoch → withdrawing from split stake → users claiming SOL.*
+
+**Video Link:** `https://youtube.com/watch?v=ADMIN_DEMO_VIDEO_ID` (Replace with actual video URL)
+
+---
+
+### Screenshot Directory Structure
+```
+lst_manager/
+├── screenshots/
+│   ├── user-dashboard-overview.png
+│   ├── user-stake-interface.png
+│   ├── user-stake-success.png
+│   ├── user-unstake-interface.png
+│   ├── user-unstake-success.png
+│   ├── user-pending-withdrawals-waiting.png
+│   ├── user-pending-withdrawals-ready.png
+│   ├── user-claim-success.png
+│   ├── admin-dashboard-overview.png
+│   ├── admin-stake-vault.png
+│   ├── admin-stake-success.png
+│   ├── admin-unstake.png
+│   ├── admin-unstake-success.png
+│   ├── admin-withdraw.png
+│   ├── admin-withdraw-success.png
+│   ├── admin-active-stake-accounts.png
+│   ├── admin-split-stake-accounts.png
+│   ├── user-demo-thumbnail.png
+│   └── admin-demo-thumbnail.png
+└── README.md
+```
+
+**Note:** Create the `screenshots/` directory and add your screenshots with the filenames listed above. Replace the video placeholder URLs with actual YouTube or video hosting links when available.
 
 ---
 
