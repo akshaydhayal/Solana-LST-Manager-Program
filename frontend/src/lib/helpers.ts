@@ -21,8 +21,12 @@ export async function getProtocolStats(connection:Connection){
     //@ts-ignore
     let protocolActivePendingWithdrawls:number= Number(deserialisedLstManagerPdaData.total_pending_withdrawl_sol);
     //@ts-ignore
+    //LST supply in protocol
     let protocolActiveStaked:number= Number(deserialisedLstManagerPdaData.total_sol_staked);
-    return {protocolTVL, protocolActivePendingWithdrawls, protocolActiveStaked};
+    let lstMintData=await spl.getMint(connection,lstMintPda,"confirmed",spl.TOKEN_PROGRAM_ID);
+    let lstSupply=Number(lstMintData.supply) / (Math.pow(10,lstMintData.decimals));
+    
+    return {protocolTVL, protocolActivePendingWithdrawls, protocolActiveStaked, lstSupply};
 }
 
 export async function getLSTMintSupply(connection:Connection){

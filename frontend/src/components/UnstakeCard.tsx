@@ -3,13 +3,14 @@ import { LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction, TransactionIns
 import { ArrowDown, Clock } from "lucide-react"
 import { useEffect, useState } from "react";
 import { lstManagerBump, lstManagerPda, lstManagerVaultBump, lstManagerVaultPda, lstMintBump, lstMintPda, PROGRAM_ID } from "../lib/constants";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { navState } from "../state/navState";
 import * as spl from "@solana/spl-token";
 import { Buffer } from "buffer";
 import * as borsh from "borsh";
 import { lstToSolExchangeRateState } from "../state/lstToSolExchangeRateState";
 import toast from "react-hot-toast";
+import { protocolStatsState } from "../state/protocolStatsState";
 
 let serialisedU64Schema:borsh.Schema={
     struct:{value:'u64'}
@@ -18,6 +19,8 @@ let serialisedU64Schema:borsh.Schema={
 const UnstakeCard = () => {
   const [unstakeAmount, setUnstakeAmount] = useState<null|number>(null);
   const [userLstBalance, setUserLstBalance] = useState(0);
+  let [protocolStats, setProtocolStats] = useRecoilState(protocolStatsState);
+
   const [txSig, setTxSig] = useState('');
 
   let {connection}=useConnection();
@@ -83,6 +86,7 @@ const UnstakeCard = () => {
     const explorerUrl=`https://explorer.solana.com/tx/${txStatus}?cluster=devnet`;
     toast.success(<a className="underline" href={explorerUrl} target="_blank" rel="noreferrer">Your unstake request was submitted successfully! View on Explorer</a>);
     setTxSig(txStatus);
+    setProtocolStats({...protocolStats, protocolTVL: protocolStats.protocolTVL - unstakeAmount*lstToSolExchangeRate*LAMPORTS_PER_SOL, lstSupply: protocolStats.lstSupply - unstakeAmount , protocolActivePendingWithdrawls: protocolStats.protocolActivePendingWithdrawls + unstakeAmount*lstToSolExchangeRate*LAMPORTS_PER_SOL});
     console.log("unstake lst txStatus : ",txStatus);
   }
 

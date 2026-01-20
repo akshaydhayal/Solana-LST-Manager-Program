@@ -1,18 +1,18 @@
 import { useConnection } from '@solana/wallet-adapter-react';
-import { getLSTMintSupply, getProtocolStats } from '../lib/helpers';
+import { getProtocolStats } from '../lib/helpers';
 import StatCard from './StatCard'
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { ArrowDownUp, Coins, TrendingUp } from 'lucide-react';
 import { lstToSolExchangeRateState } from '../state/lstToSolExchangeRateState';
-
-type protocolStatType={ protocolTVL: number, protocolActivePendingWithdrawls: number, protocolActiveStaked:number};
+import { protocolStatsState } from '../state/protocolStatsState';
 
 const StatsGrid = () => {
   let {connection}=useConnection();
-  const [protocolStats, setProtocolStats] = useState<null| protocolStatType>(null);   
-  const [lstSupply, setLstSupply] = useState<null|number>(null);
+  // const [protocolStats, setProtocolStats] = useState<null| protocolStatType>(null);   
+  const [protocolStats, setProtocolStats] = useRecoilState(protocolStatsState);   
+  // const [lstSupply, setLstSupply] = useState<null|number>(null);
   let [lstToSolexchangeRate,setLstToSolexchangeRate]=useRecoilState(lstToSolExchangeRateState);
 
   const stats = {
@@ -30,10 +30,13 @@ const StatsGrid = () => {
       if(protocolData){
           setProtocolStats(protocolData);
       }
-      let lstMintSupply=await getLSTMintSupply(connection);
-      setLstSupply(lstMintSupply);
-      if(protocolData?.protocolTVL && lstMintSupply!=0){
-        setLstToSolexchangeRate(protocolData.protocolTVL/(LAMPORTS_PER_SOL*lstMintSupply));
+      // let lstMintSupply=await getLSTMintSupply(connection);
+      // setLstSupply(lstMintSupply);
+      // if(protocolData?.protocolTVL && lstMintSupply!=0){
+      //   setLstToSolexchangeRate(protocolData.protocolTVL/(LAMPORTS_PER_SOL*lstMintSupply));
+      // }
+      if(protocolData?.protocolTVL && protocolData.lstSupply!=0){
+        setLstToSolexchangeRate(protocolData.protocolTVL/(LAMPORTS_PER_SOL*protocolData.lstSupply));
       }
     }
     getProtocolInfo();
@@ -44,7 +47,8 @@ const StatsGrid = () => {
         {/* <StatCard label="Total Value Locked (TVL)" value={`${protocolTVL?protocolTVL/LAMPORTS_PER_SOL:'0'} SOL`} */}
         <StatCard label="Total Value Locked (TVL)" value={`${protocolStats?.protocolTVL?protocolStats.protocolTVL/LAMPORTS_PER_SOL:'0'} SOL`}
             icon={Coins} gradient=""/>
-        <StatCard label="Total dSOL LST Supply" value={`${lstSupply} dSOL`}
+        {/* <StatCard label="Total dSOL LST Supply" value={`${lstSupply} dSOL`} */}
+        <StatCard label="Total dSOL LST Supply" value={`${protocolStats?.lstSupply ? protocolStats.lstSupply : '0'} dSOL`}
             icon={Coins} gradient=""/>
         <StatCard label="Current APY" value={`${stats.apy}%`} subtext="Est. annual yield"
             icon={TrendingUp} gradient=""/>

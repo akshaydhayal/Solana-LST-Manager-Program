@@ -1,7 +1,7 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { ArrowDown, Info } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { navState } from '../state/navState';
 import { Buffer } from 'buffer';
 import * as borsh from "borsh";
@@ -10,6 +10,7 @@ import { LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction, TransactionIns
 import * as spl from "@solana/spl-token";
 import { lstToSolExchangeRateState } from '../state/lstToSolExchangeRateState';
 import toast from 'react-hot-toast';
+import { protocolStatsState } from '../state/protocolStatsState';
 
 let serialisedAmountSchema:borsh.Schema={
     struct:{amount:'u64'}
@@ -20,6 +21,7 @@ const StakeCard = () => {
   const [txSig, setTxSig] = useState('');
   const [stakeAmount, setStakeAmount] = useState(0);
   const [userBalance, setUserBalance] = useState(0);
+  let [protocolStats, setProtocolStats] = useRecoilState(protocolStatsState);
   let {connection}=useConnection();
   let wallet=useWallet();
 
@@ -71,6 +73,7 @@ const StakeCard = () => {
     const explorerUrl=`https://explorer.solana.com/tx/${txStatus}?cluster=devnet`;
     toast.success(<a className="underline" href={explorerUrl} target="_blank" rel="noreferrer">Your deposit was staked successfully! View on Explorer</a>);
     setTxSig(txStatus);
+    setProtocolStats({...protocolStats, protocolTVL: protocolStats.protocolTVL + stakeAmount*LAMPORTS_PER_SOL, lstSupply: protocolStats.lstSupply + stakeAmount/lstToSolExchangeRate});
     console.log("user deposit sol tx status : ",txStatus);
 }
 
