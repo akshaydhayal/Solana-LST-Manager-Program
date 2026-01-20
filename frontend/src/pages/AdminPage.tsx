@@ -20,15 +20,16 @@ const AdminPage = () => {
                     <div className="bg-gradient-to-br from-gray-800/90 via-gray-800/80 to-gray-800/90 backdrop-blur-sm rounded-xl border border-blue-500/20 shadow-lg shadow-blue-500/10 p-2 flex gap-2">
                         <button onClick={() => setActiveTab('stake')}
                             className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'stake' ? 'bg-gradient-to-r from-green-600 to-emerald-600 shadow-lg shadow-green-500/30 text-white' : 'bg-gray-900/50 text-gray-400 hover:bg-gray-900 hover:text-green-400'} cursor-pointer`}>
-                            <TrendingUp size={18} />Stake Vault SOL
+                            <TrendingUp size={18}/>
+                            <p className=''>Stake SOL to Validator</p>
                         </button>
                         <button onClick={() => setActiveTab('unstake')} 
                             className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'unstake'? 'bg-gradient-to-r from-orange-600 to-red-600 shadow-lg shadow-orange-500/30 text-white': 'bg-gray-900/50 text-gray-400 hover:bg-gray-900 hover:text-orange-400'} cursor-pointer`}>
-                            <TrendingDown size={18} />Unstake SOL
+                            <TrendingDown size={18} />Unstake from Validator
                         </button>
                         <button onClick={() => setActiveTab('withdraw')}
                             className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${ activeTab === 'withdraw'? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg shadow-purple-500/30 text-white': 'bg-gray-900/50 text-gray-400 hover:bg-gray-900 hover:text-purple-400' } cursor-pointer`}>
-                            <Database size={18} />Withdraw Split
+                            <Database size={18} />Withdraw from Split
                         </button>
                     </div>
                     {activeTab === 'stake' && (<AdminStake/>)}

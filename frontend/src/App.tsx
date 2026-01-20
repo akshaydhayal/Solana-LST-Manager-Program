@@ -5,6 +5,7 @@ import "@solana/wallet-adapter-react-ui/styles.css";
 import { RecoilRoot } from "recoil";
 import AppGate from "./pages/AppGate";
 import Navbar from "./components/Navbar";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   let endpoint=clusterApiUrl("devnet")
@@ -14,6 +15,7 @@ function App() {
           <WalletModalProvider>
             <RecoilRoot>
               <Navbar/>
+              <Toaster position="top-right" toastOptions={{ duration: 10000 }} />
               <AppGate/>
               {/* <Routes>
                 <Route path="/" element={<UserPage/>}/>

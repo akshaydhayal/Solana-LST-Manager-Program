@@ -9,6 +9,7 @@ import { lstManagerBump, lstManagerPda, lstManagerVaultBump, lstManagerVaultPda,
 import { LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
 import * as spl from "@solana/spl-token";
 import { lstToSolExchangeRateState } from '../state/lstToSolExchangeRateState';
+import toast from 'react-hot-toast';
 
 let serialisedAmountSchema:borsh.Schema={
     struct:{amount:'u64'}
@@ -63,6 +64,8 @@ const StakeCard = () => {
     let txStatus=await wallet.sendTransaction(tx,connection);
     // let txStatus=await connection.sendRawTransaction(tx.serialize());
     await connection.confirmTransaction(txStatus,"confirmed");
+    const explorerUrl=`https://explorer.solana.com/tx/${txStatus}?cluster=devnet`;
+    toast.success(<a className="underline" href={explorerUrl} target="_blank" rel="noreferrer">Stake submitted: view on Explorer</a>);
     setTxSig(txStatus);
     console.log("user deposit sol tx status : ",txStatus);
 }

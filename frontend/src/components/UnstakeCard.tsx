@@ -9,6 +9,7 @@ import * as spl from "@solana/spl-token";
 import { Buffer } from "buffer";
 import * as borsh from "borsh";
 import { lstToSolExchangeRateState } from "../state/lstToSolExchangeRateState";
+import toast from "react-hot-toast";
 
 let serialisedU64Schema:borsh.Schema={
     struct:{value:'u64'}
@@ -75,6 +76,8 @@ const UnstakeCard = () => {
     let tx=new Transaction().add(ix);
     let txStatus=await wallet.sendTransaction(tx,connection);
     await connection.confirmTransaction(txStatus,"confirmed");
+    const explorerUrl=`https://explorer.solana.com/tx/${txStatus}?cluster=devnet`;
+    toast.success(<a className="underline" href={explorerUrl} target="_blank" rel="noreferrer">Unstake submitted: view on Explorer</a>);
     setTxSig(txStatus);
     console.log("unstake lst txStatus : ",txStatus);
   }

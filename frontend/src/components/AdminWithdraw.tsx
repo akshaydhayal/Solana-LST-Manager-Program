@@ -9,6 +9,7 @@ import { navState } from '../state/navState';
 import * as borsh from "borsh";
 import { valueToU64Schema } from '../lib/borshSchema';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import toast from 'react-hot-toast';
 
 const AdminWithdraw = () => {
   let {connection}=useConnection();
@@ -53,13 +54,15 @@ const AdminWithdraw = () => {
     let tx=new Transaction().add(ix);
     let txStatus=await wallet.sendTransaction(tx,connection);
     await connection.confirmTransaction(txStatus,"confirmed");
+    const explorerUrl=`https://explorer.solana.com/tx/${txStatus}?cluster=devnet`;
+    toast.success(<a className="underline" href={explorerUrl} target="_blank" rel="noreferrer">Admin withdraw submitted: view on Explorer</a>);
     console.log("withdraw to vault txStatus : ",txStatus); 
   }
 
   return (
     <div className="bg-gradient-to-br from-gray-800/90 via-gray-800/80 to-gray-800/90 backdrop-blur-sm rounded-2xl border-2 border-purple-500/20 shadow-lg shadow-purple-500/10 p-6">
         <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-            <Database size={22} className="text-purple-400" />Withdraw from Split Stake
+            <Database size={22} className="text-purple-400" />Withdraw from Split Stake Acc to Withdraw Vault
         </h3>
         <div className="space-y-4">
             <div>

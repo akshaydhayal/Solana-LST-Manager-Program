@@ -7,6 +7,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
 import { lstManagerBump, lstManagerPda, lstManagerWithdrawVaultBump, lstManagerWithdrawVaultPda, PROGRAM_ID } from '../lib/constants';
 import { Buffer } from 'buffer';
+import toast from 'react-hot-toast';
 
 const PendingWithdrawlsCard = () => {
   let {connection}=useConnection();
@@ -62,6 +63,8 @@ const PendingWithdrawlsCard = () => {
     let tx=new Transaction().add(ix);
     let txStatus=await wallet.sendTransaction(tx,connection);
     await connection.confirmTransaction(txStatus,"confirmed");
+    const explorerUrl=`https://explorer.solana.com/tx/${txStatus}?cluster=devnet`;
+    toast.success(<a className="underline" href={explorerUrl} target="_blank" rel="noreferrer">Claim submitted: view on Explorer</a>);
     console.log("claim sol txStatus : ",txStatus);
   }
   // Mock data

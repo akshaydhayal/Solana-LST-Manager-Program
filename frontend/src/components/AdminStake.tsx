@@ -7,12 +7,16 @@ import { Buffer } from 'buffer';
 import { useRecoilValue } from 'recoil';
 import { navState } from '../state/navState';
 import { getNextStakePdaAccount } from '../lib/helpers';
+import toast from 'react-hot-toast';
 
 const AdminStake = () => {
   let {connection}=useConnection();
   let wallet=useWallet();
   //const [stakeAmount, setStakeAmount] = useState<null|number>(null);  
   const [vaultBalance, setVaultBalnce] = useState(0);
+  // You will populate this from your own fetch logic (list of validator vote accounts)
+  const [allValidators, setAllValidators] = useState<PublicKey[]>([]);
+  const [selectedValidator, setSelectedValidator] = useState<string>('');
   let userAddress=useRecoilValue(navState);
 
   useEffect(()=>{
@@ -21,6 +25,13 @@ const AdminStake = () => {
         setVaultBalnce(lstManagerVaultPdaBal);
     }
     getVaultBal();
+
+    async function getAllValidators(){
+      let voteAcc=await connection.getVoteAccounts("confirmed");
+      let validators=voteAcc.current.map((validator)=>new PublicKey(validator.votePubkey));
+      setAllValidators(validators);
+    }
+    getAllValidators();
 },[connection])
 
 async function stakeVaultSolToValidator(){
@@ -29,8 +40,9 @@ async function stakeVaultSolToValidator(){
     let nextStakeAcc=await getNextStakePdaAccount(connection);
     if(!nextStakeAcc){return;}
 
-    //@c here we should have a selector that which validator to vote insteda of single validator only, maybe later
-    let validatorVoteAcc=new PublicKey("DSQ5BLBM6UcuWP2SNpmf3TJeMbqbwTFGzVqFGufyNCgk");
+    // If admin hasn't selected one yet, fall back to the previous default vote account
+    const fallbackValidatorVoteAcc=new PublicKey("DSQ5BLBM6UcuWP2SNpmf3TJeMbqbwTFGzVqFGufyNCgk");
+    const validatorVoteAcc = selectedValidator ? new PublicKey(selectedValidator) : fallbackValidatorVoteAcc;
     const STAKE_CONFIG_ID = new PublicKey("StakeConfig11111111111111111111111111111111");
 
     let ix=new TransactionInstruction({
@@ -63,18 +75,44 @@ async function stakeVaultSolToValidator(){
     let tx=new Transaction().add(ix);
     let txStatus=await wallet.sendTransaction(tx,connection);
     await connection.confirmTransaction(txStatus,"confirmed");
+    const explorerUrl=`https://explorer.solana.com/tx/${txStatus}?cluster=devnet`;
+    toast.success(<a className="underline" href={explorerUrl} target="_blank" rel="noreferrer">Admin stake submitted: view on Explorer</a>);
     console.log("stake SOL txStatus : ",txStatus);
   }
 
   return (
     <div className="bg-gradient-to-br from-gray-800/90 via-gray-800/80 to-gray-800/90 backdrop-blur-sm rounded-2xl border-2 border-green-500/20 shadow-lg shadow-green-500/10 p-6">
         <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-            <TrendingUp size={22} className="text-green-400" />Stake Vault SOL</h3>
+            <TrendingUp size={22} className="text-green-400" />Stake User Deposited SOL to Validators</h3>
 
         <div className="space-y-4">
             <div>
-                <label className="text-sm text-green-300 mb-2 block">Available Vault Balance</label>
+                <label className="text-sm text-green-300 mb-2 block">Available Vault Balance for Staking</label>
                 <div className="text-3xl font-bold mb-4 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">{vaultBalance/LAMPORTS_PER_SOL} SOL</div>
+            </div>
+
+            <div>
+                <label className="text-sm text-green-300 mb-2 block">Select Validator (Vote Account)</label>
+                <select
+                    value={selectedValidator}
+                    onChange={(e) => setSelectedValidator(e.target.value)}
+                    className="w-full bg-gradient-to-br from-gray-900/60 to-gray-900/40 border-2 border-green-500/30 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 focus:shadow-lg focus:shadow-green-500/20 transition-all cursor-pointer"
+                >
+                    <option value="" className="bg-gray-900">
+                        {allValidators.length > 0 ? "Choose a validator..." : "No validators loaded (waiting for allValidators)"}
+                    </option>
+                    {allValidators.map((pk) => {
+                        const v = pk.toBase58();
+                        return (
+                            <option key={v} value={v} className="bg-gray-900">
+                                {v}
+                            </option>
+                        );
+                    })}
+                </select>
+                <p className="text-xs text-gray-400 mt-2">
+                    Using: <span className="text-green-300 font-mono">{(selectedValidator || "DSQ5BLBM6UcuWP2SNpmf3TJeMbqbwTFGzVqFGufyNCgk")}</span>
+                </p>
             </div>
 
             {/* <div>

@@ -10,6 +10,7 @@ import { Buffer } from 'buffer';
 import * as borsh from "borsh";
 import { valueToU64Schema } from '../lib/borshSchema';
 import { getNextSplitPdaAccount } from '../lib/helpers';
+import toast from 'react-hot-toast';
 
 const AdminUnstake = () => {
   let {connection}=useConnection();
@@ -82,6 +83,8 @@ const AdminUnstake = () => {
     console.log("sig",sig.value);
     let txStatus=await wallet.sendTransaction(tx,connection);
     await connection.confirmTransaction(txStatus,"confirmed");
+    const explorerUrl=`https://explorer.solana.com/tx/${txStatus}?cluster=devnet`;
+    toast.success(<a className="underline" href={explorerUrl} target="_blank" rel="noreferrer">Admin unstake submitted: view on Explorer</a>);
     console.log("unstake sol by split accounts txStatus",txStatus);
   }
 
@@ -89,7 +92,7 @@ const AdminUnstake = () => {
   return (
     <div className="bg-gradient-to-br from-gray-800/90 via-gray-800/80 to-gray-800/90 backdrop-blur-sm rounded-2xl border-2 border-orange-500/20 shadow-lg shadow-orange-500/10 p-6">
         <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
-            <TrendingDown size={22} className="text-orange-400" />Unstake SOL
+            <TrendingDown size={22} className="text-orange-400" />Unstake SOL from Validator for User’s dSOL Burn Request
         </h3>
 
         <div className="space-y-4">
