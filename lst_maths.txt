@@ -1,3 +1,11 @@
+changes to make:
+1. in withdrawls, after claiming also, withdrawls are shown, but dont show 
+    if withdraw status is 1 means claimed
+2. claim button dont enable if vault has ot suffiecint balance so that
+    user claim before admin withdraw from split to withdraw vault
+3
+
+
 where to put the ix to withdrawing from split accounts to withdrawl vault- cant put in unstake ix
 as if main stake account is in activated state, then split account will be in deactivating state after 
 unstake ix, and not possible to withdraw from deactivating split stake acc, to withdraw from it, it must be 
